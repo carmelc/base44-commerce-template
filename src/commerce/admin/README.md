@@ -1,16 +1,16 @@
-# Store Admin (`admin/`)
+# Store Admin (`src/commerce/admin/`)
 
 React admin UI for the WooCommerce-on-Base44 commerce template. Copy this
 folder into a Base44 app built on the default template (Vite + React +
 Tailwind + shadcn/ui + React Router) to get a full store back office.
 
-> Full install & architecture docs: [`../implementation-guidelines.md`](../implementation-guidelines.md)
-> API references: [`../docs/api-admin.md`](../docs/api-admin.md), [`../docs/api-storefront.md`](../docs/api-storefront.md)
+> Full install & architecture docs: [`implementation-guidelines.md`](../../../implementation-guidelines.md)
+> API references: [`docs/api-admin.md`](../../../docs/api-admin.md), [`docs/api-storefront.md`](../../../docs/api-storefront.md)
 
 ## Mounting
 
 1. Deploy the backend first (`base44/` entities + functions — see the root README).
-2. Copy this folder to `src/admin/` in your app.
+2. Copy this folder to `src/commerce/admin/` in your app.
 3. Install extra deps (everything else comes with the default template):
 
    ```bash
@@ -20,7 +20,7 @@ Tailwind + shadcn/ui + React Router) to get a full store back office.
 4. Mount the app in your router:
 
    ```jsx
-   import AdminApp from "@/admin";
+   import AdminApp from "@/commerce/admin";
 
    <Route path="/admin/*" element={<AdminApp />} />
    // mounted elsewhere? → <AdminApp basePath="/backoffice" />

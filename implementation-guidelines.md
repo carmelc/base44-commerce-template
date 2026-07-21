@@ -11,7 +11,7 @@ Operational guidance for installing, embedding, extending and running the Base44
 1. Copy `base44/entities/*`, `base44/functions/*`, `base44/shared/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
 2. `npx base44 entities push` — creates/updates the 24 entity schemas.
 3. `npx base44 functions deploy` — deploys the 14 functions.
-4. Copy `admin/` → `src/admin/`, `npm i sonner recharts`, mount `<Route path="/admin/*" element={<AdminApp/>}/>`.
+4. Copy `src/commerce/admin/` → `src/commerce/admin/`, `npm i sonner recharts`, mount `<Route path="/admin/*" element={<AdminApp/>}/>`.
 5. Grant your user the `admin` role.
 6. Open `/admin` → **Initialize store defaults** (runs `seed-store`).
 
@@ -37,15 +37,15 @@ The admin setup screen surfaces these errors verbatim. Sample catalog data is on
 
 ## 2. Embedding the admin pages
 
-The admin UI is a self-contained React app under `admin/`. Its only external touchpoints are `@/components/ui/*` (shadcn) and `@/api/base44Client` (your app's SDK client).
+The admin UI is a self-contained React app under `src/commerce/admin/`. Its only external touchpoints are `@/components/ui/*` (shadcn) and `@/api/base44Client` (your app's SDK client).
 
 **Steps:**
 
-1. Copy `admin/` → `src/admin/`.
-2. `npm i sonner recharts`. Verify the shadcn primitives listed in `admin/README.md` are present (`npx shadcn@latest add <name>` for any missing).
+1. Copy `src/commerce/admin/` → `src/commerce/admin/`.
+2. `npm i sonner recharts`. Verify the shadcn primitives listed in `src/commerce/admin/README.md` are present (`npx shadcn@latest add <name>` for any missing).
 3. Mount the router:
    ```jsx
-   import AdminApp from "@/admin";
+   import AdminApp from "@/commerce/admin";
    <Route path="/admin/*" element={<AdminApp />} />
    ```
    If you mount at a different base path, pass it: `<AdminApp basePath="/store-admin" />`.

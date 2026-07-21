@@ -1,6 +1,6 @@
 # Admin API Reference
 
-For building store automation or an alternative admin UI against the Base44 Commerce Template. The bundled admin UI (`admin/`) uses exactly this surface.
+For building store automation or an alternative admin UI against the Base44 Commerce Template. The bundled admin UI (`src/commerce/admin/`) uses exactly this surface.
 
 ## Data-access contract
 

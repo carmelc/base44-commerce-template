@@ -1,11 +1,14 @@
 /**
  * Single touchpoint for the Base44 SDK client and backend-function calls.
  *
- * If your app exports the client differently (e.g. a named export),
- * this is the ONLY file you need to adjust.
+ * Works whether your app exports the client as a named `base44` export
+ * (Base44's default `src/api/base44Client.js`) or as a default export.
+ * If yours differs, this is the ONLY file you need to adjust.
  */
-import base44 from "@/api/base44Client";
+import * as base44Client from "@/api/base44Client";
 import { toast } from "sonner";
+
+const base44 = base44Client.base44 ?? base44Client.default;
 
 /**
  * Invoke a backend function using the template's `{action, ...payload}` convention.
