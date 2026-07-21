@@ -1,0 +1,84 @@
+{
+  "name": "ShippingZoneMethod",
+  "type": "object",
+  "description": "A shipping method instance attached to a zone. The settings object shape depends on method_id.",
+  "properties": {
+    "zone_id": {
+      "type": "string",
+      "description": "ShippingZone id"
+    },
+    "method_id": {
+      "type": "string",
+      "enum": ["flat_rate", "free_shipping", "local_pickup"],
+      "description": "Method type"
+    },
+    "title": {
+      "type": "string",
+      "description": "Customer-facing method title"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Display order within the zone"
+    },
+    "settings": {
+      "type": "object",
+      "description": "Per-method settings. flat_rate: {cost, tax_status, class_costs, no_class_cost, calculation_type}; free_shipping: {requires, min_amount, ignore_discounts}; local_pickup: {cost, tax_status}",
+      "properties": {
+        "cost": {
+          "type": "number",
+          "description": "flat_rate/local_pickup base cost"
+        },
+        "tax_status": {
+          "type": "string",
+          "enum": ["taxable", "none"],
+          "description": "flat_rate/local_pickup"
+        },
+        "class_costs": {
+          "type": "array",
+          "description": "flat_rate: additional cost per shipping class present in the cart",
+          "items": {
+            "type": "object",
+            "properties": {
+              "shipping_class_id": { "type": "string" },
+              "cost": { "type": "number" }
+            }
+          }
+        },
+        "no_class_cost": {
+          "type": "number",
+          "description": "flat_rate: cost applied for items without a shipping class"
+        },
+        "calculation_type": {
+          "type": "string",
+          "enum": ["class", "order"],
+          "description": "flat_rate: charge per class present (class) or most expensive class only (order)"
+        },
+        "requires": {
+          "type": "string",
+          "enum": ["", "coupon", "min_amount", "either", "both"],
+          "description": "free_shipping: requirement for the method to be offered"
+        },
+        "min_amount": {
+          "type": "number",
+          "description": "free_shipping: minimum items subtotal"
+        },
+        "ignore_discounts": {
+          "type": "boolean",
+          "description": "free_shipping: compare min_amount against pre-discount subtotal"
+        }
+      }
+    }
+  },
+  "required": ["zone_id", "method_id"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

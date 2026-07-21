@@ -1,0 +1,113 @@
+{
+  "name": "Coupon",
+  "type": "object",
+  "description": "Discount coupon with WooCommerce-parity restrictions and usage limits. Validation happens server-side in shared/coupons.",
+  "properties": {
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Coupon code, stored lowercase, unique (enforced in admin-coupons)"
+    },
+    "discount_type": {
+      "type": "string",
+      "enum": ["percent", "fixed_cart", "fixed_product"],
+      "default": "fixed_cart"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Discount value (percentage for percent type)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "date_expires": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "free_shipping": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enables the free_shipping method when it requires a coupon"
+    },
+    "individual_use": {
+      "type": "boolean",
+      "default": false,
+      "description": "Cannot be combined with other coupons"
+    },
+    "exclude_sale_items": {
+      "type": "boolean",
+      "default": false
+    },
+    "product_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Apply only to these products"
+    },
+    "excluded_product_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "product_category_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Apply only to items in these categories"
+    },
+    "excluded_product_category_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "minimum_amount": {
+      "type": "number",
+      "description": "Minimum items subtotal to qualify"
+    },
+    "maximum_amount": {
+      "type": "number",
+      "description": "Maximum items subtotal to qualify"
+    },
+    "email_restrictions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Allowed billing emails; *@domain.com wildcards supported"
+    },
+    "usage_limit": {
+      "type": "integer",
+      "description": "Max uses across all customers; null/absent = unlimited"
+    },
+    "usage_limit_per_user": {
+      "type": "integer",
+      "description": "Max uses per customer email; null/absent = unlimited"
+    },
+    "limit_usage_to_x_items": {
+      "type": "integer",
+      "description": "Max items the coupon applies to (fixed_product); null/absent = all"
+    },
+    "usage_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Derived. Maintained by shared/coupons countUsage/uncountUsage."
+    },
+    "used_by": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Customer emails, one entry per counted use. Maintained by shared/coupons."
+    },
+    "meta_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["code", "amount"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

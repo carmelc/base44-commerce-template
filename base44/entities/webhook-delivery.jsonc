@@ -1,0 +1,45 @@
+{
+  "name": "WebhookDelivery",
+  "type": "object",
+  "description": "Delivery log for a webhook attempt. Written by shared/webhooks dispatch; prune via admin-tools prune-webhook-deliveries.",
+  "properties": {
+    "webhook_id": {
+      "type": "string",
+      "description": "Webhook id"
+    },
+    "topic": {
+      "type": "string"
+    },
+    "delivery_url": {
+      "type": "string"
+    },
+    "request_headers": {
+      "type": "object",
+      "description": "Headers sent with the delivery"
+    },
+    "request_body": {
+      "type": "string",
+      "description": "JSON payload, truncated to 32KB"
+    },
+    "response_code": {
+      "type": "integer"
+    },
+    "response_body": {
+      "type": "string",
+      "description": "Response body, truncated"
+    },
+    "duration_ms": {
+      "type": "number"
+    },
+    "success": {
+      "type": "boolean"
+    }
+  },
+  "required": ["webhook_id"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

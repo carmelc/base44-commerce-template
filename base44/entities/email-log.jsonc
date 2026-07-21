@@ -1,0 +1,33 @@
+{
+  "name": "EmailLog",
+  "type": "object",
+  "description": "Log of transactional emails sent via shared/emails (parity with Woo email logging).",
+  "properties": {
+    "email_type": {
+      "type": "string",
+      "description": "e.g. new_order, processing, completed, refunded, customer_note"
+    },
+    "recipient": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "order_id": {
+      "type": "string"
+    },
+    "success": {
+      "type": "boolean"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message when success is false"
+    }
+  },
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
