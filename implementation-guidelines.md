@@ -2,6 +2,12 @@
 
 Operational guidance for installing, embedding, extending and running the Base44 Commerce Template. Read alongside [`docs/api-admin.md`](./docs/api-admin.md) and [`docs/api-storefront.md`](./docs/api-storefront.md).
 
+> **If you are a Base44 agent working inside the runtime, read this first:**
+> - **Don't read the whole codebase up front.** Start with this file, then open only the files your current task touches plus the matching API reference (below), pulling in more as you go. Reading everything first just burns context.
+> - **Skip the `npx base44` commands.** The runtime deploys functions and pushes entities automatically the moment you write the files — writing a resource file *is* the deploy. See the *Base44 agent path* in §1.
+> - **Don't grant admin roles.** Granting a user the `admin` role is not an install step for you; instead, validate that the admin-role gating (§2) is preserved when you merge the admin routes into the app's router.
+> - **No storefront UI ships** — only the storefront *API* is included. To build the visitor-facing shopfront, read [`docs/api-storefront.md`](./docs/api-storefront.md) first and implement against it (see §3).
+
 ---
 
 ## 1. Installation
@@ -14,10 +20,6 @@ Operational guidance for installing, embedding, extending and running the Base44
 4. Copy `src/commerce/admin/` → `src/commerce/admin/`, `npm i sonner recharts`, mount `<Route path="/admin/*" element={<AdminApp/>}/>`.
 5. Grant your user the `admin` role.
 6. Open `/admin` → **Initialize store defaults** (runs `seed-store`).
-
-**MCP path (hosted apps):** use the Base44 agent to `write_file` each file; adapt import paths (`@/api/base44Client`, router location) via `list_directory`/`read_file`; then seed as above.
-
-**Verify the install** by invoking `admin-tools` `status`:
 
 ```js
 const { data } = (await base44.functions.invoke("admin-tools", { action: "status" })).data;
@@ -116,17 +118,25 @@ Never store card data or secret keys in the `PaymentGateway` entity — use the 
 
 ---
 
-## 5. No-cron (scheduled work)
+## 5. Scheduled work (workflows)
 
-Base44 has no scheduler. Three time-based concerns are handled **opportunistically** and via on-demand `admin-tools` actions you can trigger from an external cron (e.g. a GitHub Action hitting the function URL):
+Base44 **has** a scheduler — the recurring maintenance below is run by **scheduled workflows**, and the Base44 agent can create them for you. **This template ships no workflow/schedule files on purpose**: don't look for them under `base44/` and don't add them here — create the workflows directly in the target app.
 
-| Concern | Opportunistic trigger | On-demand action |
-|---|---|---|
-| Release stock held by unpaid orders past `hold_stock_minutes` | `storefront-checkout` `place-order` calls it at the start of every checkout | `admin-orders` action `release-expired-holds` |
-| Abandoned cart cleanup (48h TTL) | expired carts are marked `abandoned` on next access | `admin-tools` action `clear-abandoned-carts` `{ older_than_days }` |
-| Webhook delivery log growth | — | `admin-tools` action `prune-webhook-deliveries` `{ keep_days }` |
+**Instruct the agent (or set up yourself): create one scheduled workflow per row below.** Each workflow does one thing — invoke the given function action on the chosen cadence:
 
-Other maintenance actions on `admin-tools`: `recount-terms`, `recount-coupon-usage`, `recalculate-customer-stats-all`, `regenerate-download-permissions`.
+```js
+await base44.functions.invoke("admin-tools", { action: "clear-abandoned-carts", older_than_days: 2 });
+```
+
+| Workflow to create | What it does | Action to invoke | Payload | Suggested cadence |
+|---|---|---|---|---|
+| Release expired stock holds | Frees stock held by unpaid orders past `hold_stock_minutes`. `storefront-checkout` `place-order` already runs this at the start of every checkout, so the schedule mainly covers quiet periods. | `admin-orders` `release-expired-holds` | — | every 5–15 min |
+| Abandoned cart cleanup | Marks carts past the 48 h TTL as `abandoned`. Also happens lazily on next cart access. | `admin-tools` `clear-abandoned-carts` | `{ older_than_days: 2 }` | hourly–daily |
+| Prune webhook delivery log | Deletes old `WebhookDelivery` rows so the log doesn't grow unbounded. **No opportunistic fallback — this one genuinely needs a schedule.** | `admin-tools` `prune-webhook-deliveries` | `{ keep_days: 30 }` | daily–weekly |
+
+**Optional — drift repair.** Denormalized counters can drift without transactions (see §9). If you want them self-healing, add a nightly/weekly workflow that calls the `admin-tools` recount actions: `recount-terms`, `recount-coupon-usage`, `recalculate-customer-stats-all`, `regenerate-download-permissions`.
+
+Every action above is guarded by `requireAdmin()`, so each scheduled workflow must run with **admin privileges** (an admin identity / service context), not as an anonymous caller.
 
 ---
 
@@ -184,17 +194,3 @@ See §9. The `admin-reports` `summary`/`sales`/`top-sellers` actions scan `Order
 - Carts and orders have admin-only RLS; customers never touch those entities directly — all access is mediated by `storefront-*` functions using the service role after verifying the caller.
 
 ---
-
-## 12. Divergences from WooCommerce
-
-Honest list of where this template intentionally differs:
-
-- **No `checkout-draft` order status.** In-progress checkouts live in the `Cart` entity (bearer-token) instead of draft orders.
-- **Stock is reduced immediately at order creation** + released on hold expiry, replacing Woo's separate `wc_reserved_stock` table.
-- **Downloads track a count only** — `download_count` + `downloads_remaining`; no per-event download log rows.
-- **No review replies.** Matches the WooCommerce REST surface (replies are a WP-comment feature).
-- **One tax rate per priority** is applied (first by `menu_order`), matching Woo's documented behavior; exotic multi-rate-per-priority setups are simplified.
-- **`limit_usage_to_x_items`** applies to the highest-priced eligible units first (price-desc) — a deterministic approximation of Woo's item selection.
-- **Payment tokens / saved cards** are delegated to Stripe (when wired); no local token vault.
-- **Money is stored as numbers** (2-dp, rounded via `round2`), not Woo's decimal strings.
-- **Settings are grouped records** (`StoreSettings` one per group), not individual option rows.

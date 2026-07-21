@@ -67,7 +67,7 @@ If you build on Base44's hosted platform, use the Base44 agent/MCP to write the 
 
 - **No visitor/storefront UI.** The storefront **API** is complete (`storefront-*` functions); building the shopfront is up to you — see [`docs/api-storefront.md`](./docs/api-storefront.md).
 - **No live payment processing.** Payment gateways are modeled as data (bank transfer / cheque / COD work as manual flows). A **Stripe** gateway placeholder is included; wire it via the Base44 Stripe connector — see [`implementation-guidelines.md`](./implementation-guidelines.md) §Stripe wiring.
-- **No cron/scheduler.** Base44 has no scheduler, so time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** or via `admin-tools` actions you can trigger externally — see §No-cron.
+- **No scheduled workflows shipped.** Base44 *does* have a scheduler, but this template ships no workflow files — time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** where possible, and for the rest you (or the Base44 agent) create scheduled workflows that call `admin-tools`/`admin-orders` actions — see *Scheduled work* in [`implementation-guidelines.md`](./implementation-guidelines.md).
 
 ## Next steps
 
