@@ -17,13 +17,18 @@ export interface ScanOpts {
 /**
  * Scan every record matching `query` (null/{} = all records via list()).
  * `entityApi` is e.g. `sr.entities.Order`.
+ *
+ * The 4th arg accepts either a plain number (treated as `cap`) or a full
+ * `ScanOpts` object, so both `scanAll(e, {}, "order", 500)` and
+ * `scanAll(e, {}, "order", { cap: 500 })` call styles are valid.
  */
 export async function scanAll(
   entityApi: any,
   query: Record<string, any> | null = null,
   sort = "-created_date",
-  opts: ScanOpts = {},
+  optsOrCap: ScanOpts | number = {},
 ): Promise<any[]> {
+  const opts: ScanOpts = typeof optsOrCap === "number" ? { cap: optsOrCap } : optsOrCap;
   const cap = opts.cap ?? 10_000;
   const pageSize = opts.pageSize ?? 500;
   const out: any[] = [];
