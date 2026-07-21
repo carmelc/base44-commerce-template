@@ -203,7 +203,7 @@ async function create(sr: any, payload: any, actor: string): Promise<any> {
 async function update(sr: any, payload: any, actor: string): Promise<any> {
   const order = await getOrder(sr, payload.order_id);
   const patch = payload.patch ?? {};
-  const wantsLineEdit = ["items", "fees", "coupon_codes", "chosen_shipping_method"]
+  const wantsLineEdit = ["items", "fees", "coupon_codes", "chosen_shipping_method", "shipping_lines"]
     .some((k) => patch[k] !== undefined);
   if (wantsLineEdit && isLocked(order)) {
     throw new HttpError(409, `Order items can only be edited while pending or on-hold (current: ${order.status}).`, "order_locked");
@@ -226,6 +226,13 @@ async function update(sr: any, payload: any, actor: string): Promise<any> {
       billing: patch.billing ?? order.billing,
       shipping: patch.shipping ?? order.shipping,
       chosenShippingMethodId: patch.chosen_shipping_method,
+      manualShippingLines: patch.shipping_lines !== undefined
+        ? (patch.shipping_lines ?? []).map((s: any) => ({
+          method_title: s.method_title,
+          total: s.total,
+          total_tax: s.total_tax,
+        }))
+        : undefined,
     });
     Object.assign(fields, priced);
   }

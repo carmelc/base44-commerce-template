@@ -8,6 +8,7 @@ import { getSettings } from "../../shared/settings.ts";
 import { scanAll } from "../../shared/scan.ts";
 import { HttpError } from "../../shared/auth.ts";
 import { round2 } from "../../shared/money.ts";
+import { uuid } from "../../shared/sequence.ts";
 
 export interface PricingContext {
   settings: Record<string, any>;
@@ -115,6 +116,13 @@ export interface RepriceOpts {
   billing?: any;
   shipping?: any;
   chosenShippingMethodId?: string;
+  /**
+   * Admin manual shipping lines (arbitrary title + cost) that the zone/method
+   * engine can't represent. When provided (and no chosenShippingMethodId),
+   * these REPLACE zone-computed shipping verbatim. An empty array means "no
+   * shipping". Ignored when chosenShippingMethodId is set (that wins).
+   */
+  manualShippingLines?: Array<{ method_title?: string; total: number; total_tax?: number; method_id?: string }>;
   /** Re-price lines from the current catalog instead of stored unit prices. */
   repriceFromCatalog?: boolean;
   ctx?: PricingContext;
@@ -132,8 +140,13 @@ export async function repriceOrder(sr: any, order: any, opts: RepriceOpts = {}):
     product_id: l.product_id,
     variation_id: l.variation_id || undefined,
     quantity: l.quantity,
-    // keep the stored post-discount unit price unless a catalog reprice is requested
-    price_override: opts.repriceFromCatalog ? undefined : l.price,
+    // Use the PRE-discount unit price (subtotal/qty) as the override so coupons
+    // re-apply exactly once. `l.price` is post-discount, so using it here would
+    // double-apply discounts on every reprice. Fall back to l.price if subtotal
+    // is missing. Skipped entirely when repricing from the live catalog.
+    price_override: opts.repriceFromCatalog
+      ? undefined
+      : (l.subtotal != null && l.quantity ? round2(l.subtotal / l.quantity) : l.price),
     attributes: l.attributes,
     meta_data: l.meta_data,
   }));
@@ -149,7 +162,10 @@ export async function repriceOrder(sr: any, order: any, opts: RepriceOpts = {}):
     tax_status: f.tax_status,
   }));
 
-  const chosen = opts.chosenShippingMethodId ?? order.shipping_lines?.[0]?.instance_id ?? undefined;
+  // Manual shipping mode: caller passed explicit lines and no zone method.
+  const manualMode = opts.manualShippingLines !== undefined && !opts.chosenShippingMethodId;
+  const chosen = opts.chosenShippingMethodId ??
+    (manualMode ? undefined : order.shipping_lines?.[0]?.instance_id) ?? undefined;
 
   const totals = calculateTotals({
     items,
@@ -164,8 +180,27 @@ export async function repriceOrder(sr: any, order: any, opts: RepriceOpts = {}):
     zoneMethods: ctx.zoneMethods,
   });
 
-  // legacy/manual shipping line: zone method no longer offered → keep it as-is
-  if (!totals.shipping_lines.length && (order.shipping_lines ?? []).length && !opts.chosenShippingMethodId) {
+  if (manualMode) {
+    // Replace zone-computed shipping (empty, since chosen is undefined) with the
+    // admin's manual lines verbatim and fold their cost/tax into the totals.
+    const manual = (opts.manualShippingLines ?? []).map((s) => ({
+      line_id: uuid(),
+      method_id: s.method_id ?? "manual",
+      instance_id: "",
+      method_title: s.method_title ?? "Shipping",
+      total: round2(Number(s.total) || 0),
+      total_tax: round2(Number(s.total_tax) || 0),
+      taxes: [],
+    }));
+    const mTotal = round2(manual.reduce((a, s) => a + s.total, 0));
+    const mTax = round2(manual.reduce((a, s) => a + s.total_tax, 0));
+    totals.shipping_lines = manual;
+    totals.shipping_total = mTotal;
+    totals.shipping_tax = mTax;
+    totals.total_tax = round2(totals.total_tax + mTax);
+    totals.total = round2(totals.total + mTotal + mTax);
+  } else if (!totals.shipping_lines.length && (order.shipping_lines ?? []).length && !opts.chosenShippingMethodId) {
+    // legacy/manual shipping line: zone method no longer offered → keep it as-is
     const kept = order.shipping_lines;
     const keptTotal = round2(kept.reduce((a: number, s: any) => a + (s.total ?? 0), 0));
     const keptTax = round2(kept.reduce((a: number, s: any) => a + (s.total_tax ?? 0), 0));
@@ -180,7 +215,7 @@ export async function repriceOrder(sr: any, order: any, opts: RepriceOpts = {}):
 }
 
 /** Line-level fields an admin may only touch while the order is unlocked. */
-export const LINE_FIELDS = ["items", "fees", "coupon_codes", "chosen_shipping_method"];
+export const LINE_FIELDS = ["items", "fees", "coupon_codes", "chosen_shipping_method", "shipping_lines"];
 
 export function isLocked(order: any): boolean {
   return !["pending", "on-hold"].includes(order.status);
