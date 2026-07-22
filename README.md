@@ -1,6 +1,6 @@
 # Base44 Commerce Template
 
-A **WooCommerce-parity commerce backend + admin UI** for [Base44](https://base44.com) apps, delivered as a copyable file set. Drop `base44/` and `src/commerce/admin/` into an existing Base44 app to add a full store: catalog, orders, coupons, customers, reviews, tax, shipping, webhooks, reports and transactional emails — plus a public storefront API for building your own shopfront.
+A **Commerce backend + admin UI** for [Base44](https://base44.com) apps, delivered as a copyable file set. Drop `base44/` and `src/commerce/admin/` into an existing Base44 app to add a full store: catalog, orders, coupons, customers, reviews, tax, shipping, webhooks, reports and transactional emails — plus a public storefront API for building your own shopfront.
 
 It reproduces WooCommerce's **data model and behavior** (product types, order lifecycle, coupon rules, tax priority/compound math, shipping zones) using Base44-idiomatic primitives (entity JSON schemas, Deno functions, the Base44 SDK). It is an independent implementation of the publicly documented WooCommerce feature set — no WooCommerce/WordPress code is used.
 
