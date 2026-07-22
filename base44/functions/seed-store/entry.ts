@@ -4,8 +4,10 @@
  * Flow: (1) canary schema validation (probe create+delete per entity; abort
  * with 422 schema_incompatible and write nothing on any failure), (2) seed
  * required defaults (settings groups, gateways, tax classes, fallback zone),
- * (3) optional sample catalog — only when with_sample_data=true and the store
- * has zero products, with best-effort rollback on mid-failure.
+ * (3) optional sample catalog (~12 products across every product type, with
+ * images and descriptions, plus three variable products with variants) — only
+ * when with_sample_data=true and the store has zero products, with best-effort
+ * rollback on mid-failure.
  *
  * Body: { with_sample_data?: boolean }
  */
@@ -197,7 +199,7 @@ async function seedSampleData(sr: any): Promise<Record<string, number>> {
         slug: fields.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
         category_ids: (categories ?? []).map((slug: string) => categoryBySlug[slug]?.id).filter(Boolean),
         tag_ids: [],
-        images: [],
+        images: fields.images ?? [],
         meta_data: [],
         total_sales: 0,
       });
@@ -236,9 +238,11 @@ async function seedSampleData(sr: any): Promise<Record<string, number>> {
           status: "publish",
           sku: `${record.sku}-${Object.values(v.options).join("-").toUpperCase()}`,
           regular_price: v.regular_price,
+          ...(v.sale_price != null ? { sale_price: v.sale_price } : {}),
           manage_stock: "yes",
           stock_quantity: v.stock_quantity,
-          backorders: "no",
+          backorders: v.backorders ?? "no",
+          ...(v.image ? { image: v.image } : {}),
         }));
         variationCount++;
       }
