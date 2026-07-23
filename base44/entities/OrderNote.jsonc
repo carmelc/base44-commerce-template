@@ -1,0 +1,31 @@
+{
+  "name": "OrderNote",
+  "type": "object",
+  "description": "Note attached to an order: system, private admin, or customer-facing. Customer notes are served to buyers via storefront-account.",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "Order id"
+    },
+    "note": {
+      "type": "string",
+      "description": "Note content"
+    },
+    "is_customer_note": {
+      "type": "boolean",
+      "default": false,
+      "description": "Customer-facing note (triggers customer_note email)"
+    },
+    "added_by": {
+      "type": "string",
+      "description": "\"system\" or the admin's email"
+    }
+  },
+  "required": ["order_id", "note"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

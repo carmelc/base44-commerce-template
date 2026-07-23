@@ -1,0 +1,30 @@
+{
+  "name": "ProductTag",
+  "type": "object",
+  "description": "Product tag.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL slug, unique (enforced in admin UI / functions)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Derived product count. Maintained by admin-products; repair via admin-tools recount-terms."
+    }
+  },
+  "required": ["name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
