@@ -10,6 +10,7 @@ It provides a full-featured **commerce data model and behavior** (product types,
 - **14 backend functions** — 9 admin (`commerce/admin-products`, `commerce/admin-orders`, `commerce/admin-refunds`, `commerce/admin-coupons`, `commerce/admin-customers`, `commerce/admin-reviews`, `commerce/admin-webhooks`, `commerce/admin-reports`, `commerce/admin-tools`), 4 storefront (`commerce/storefront-catalog`, `commerce/storefront-cart`, `commerce/storefront-checkout`, `commerce/storefront-account`), and an idempotent `commerce/seed-store`.
 - **Shared commerce engine** (`base44/shared/commerce/`) — totals, tax, shipping, coupons, stock, order lifecycle, webhook dispatch (HMAC-signed), emails, plus static country/currency/continent data.
 - **Admin UI** (`src/commerce/admin/`) — a React/Tailwind/shadcn admin with a familiar store back-office information architecture: dashboard, orders, products, coupons, customers, reports, full settings, webhooks. Admin-role gated.
+- **StoreAdmin agent + bot** — an AI copilot (`base44/agents/commerce/StoreAdmin.jsonc`, registered as `commerce/StoreAdmin`) with the `commerce/*` functions attached directly as tools (calls run as the chatting user → `requireAdmin()` still applies), variant-aware order editing, plus a chat panel in the admin sidebar with GFM markdown-table rendering.
 - **Docs** — this README, [`installation-guidelines.md`](./installation-guidelines.md), [`implementation-guidelines.md`](./implementation-guidelines.md), and the API references in [`docs/`](./docs/).
 
 ## Repo map
@@ -20,6 +21,8 @@ base44-commerce-template/
 │   ├── entities/     24 .jsonc entity schemas (commerce.*.jsonc)
 │   ├── functions/
 │   │   └── commerce/ 14 Deno functions (entry.ts each), invoked as "commerce/<name>"
+│   ├── agents/
+│   │   └── commerce/ StoreAdmin.jsonc — AI admin copilot ("commerce/StoreAdmin")
 │   └── shared/
 │       └── commerce/ commerce engine + static data (bundled into every function)
 ├── src/
@@ -40,15 +43,16 @@ base44-commerce-template/
 From your existing Base44 app:
 
 1. **Copy the files** — either copy this whole repo into your app at `examples/commerce/` and run `node examples/commerce/scripts/install.js`, or merge `entities/`, `functions/`, `shared/` into your app's `base44/` directory by hand (see [`installation-guidelines.md`](./installation-guidelines.md)). Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these folders.
-2. **Push the schema and functions:**
+2. **Push the schema, functions and agent:**
    ```bash
    npx base44 entities push
    npx base44 functions deploy
+   npx base44 agents push
    ```
 3. **Copy the admin UI:** `src/commerce/admin/` → `src/commerce/admin/`.
 4. **Install UI deps** (if not already present) and confirm shadcn primitives:
    ```bash
-   npm i sonner recharts
+   npm i sonner recharts remark-gfm
    ```
    See [`src/commerce/admin/README.md`](./src/commerce/admin/README.md) for the exact shadcn component list.
 5. **Mount the admin router** in your app:

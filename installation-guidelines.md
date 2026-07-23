@@ -24,13 +24,14 @@ Relative to the script's own folder (`examples/commerce/scripts/`), it copies:
 | `../base44/entities/commerce.*.jsonc` | `../../../base44/entities/` |
 | `../base44/functions/commerce/` | `../../../base44/functions/commerce/` |
 | `../base44/shared/commerce/` | `../../../base44/shared/commerce/` |
+| `../base44/agents/commerce/` | `../../../base44/agents/commerce/` |
 | `../src/commerce/admin/` | `../../../src/commerce/admin/` |
 
 Directories are merged: files owned by the template are overwritten (re-running after a template update is safe); everything else in your app is left untouched. The template repo itself stays under `examples/commerce/` — including this file, `implementation-guidelines.md` and `docs/` — so agents and teammates can consult it later.
 
 **Manual.** Equivalently, copy by hand:
 
-1. Copy `base44/entities/commerce.*`, `base44/functions/commerce/*`, `base44/shared/commerce/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
+1. Copy `base44/entities/commerce.*`, `base44/functions/commerce/*`, `base44/shared/commerce/*` and `base44/agents/commerce/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
 2. Copy `src/commerce/admin/` → `src/commerce/admin/`.
 
 Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these folders (the defaults do).
@@ -39,10 +40,11 @@ Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these f
 
 1. `npx base44 entities push` — creates/updates the 24 entity schemas. *(CLI path only — the Base44 runtime deploys on write.)*
 2. `npx base44 functions deploy` — deploys the 14 functions. *(CLI path only.)*
-3. `npm i sonner recharts` (if not already present) and verify the shadcn primitives listed in [`src/commerce/admin/README.md`](./src/commerce/admin/README.md) exist in your app.
-4. Mount the admin router (§3).
-5. Grant your user the `admin` role.
-6. Open `/admin` → **Initialize store defaults** on the first-run setup screen (runs `commerce/seed-store`).
+3. `npx base44 agents push` — registers the `commerce/StoreAdmin` agent (§4). *(CLI path only.)*
+4. `npm i sonner recharts remark-gfm` (if not already present) and verify the shadcn primitives listed in [`src/commerce/admin/README.md`](./src/commerce/admin/README.md) exist in your app.
+5. Mount the admin router (§3).
+6. Grant your user the `admin` role.
+7. Open `/admin` → **Initialize store defaults** on the first-run setup screen (runs `commerce/seed-store`).
 
 Check the install at any time:
 
@@ -69,7 +71,7 @@ The admin UI is a self-contained React app under `src/commerce/admin/`. Its only
 **Steps:**
 
 1. Copy `src/commerce/admin/` → `src/commerce/admin/` (already done if you ran `scripts/install.js`).
-2. `npm i sonner recharts`. Verify the shadcn primitives listed in `src/commerce/admin/README.md` are present (`npx shadcn@latest add <name>` for any missing).
+2. `npm i sonner recharts remark-gfm` (`react-markdown` ships with the default Base44 template; add it too if your app lacks it). Verify the shadcn primitives listed in `src/commerce/admin/README.md` are present (`npx shadcn@latest add <name>` for any missing).
 3. Mount the router:
    ```jsx
    import AdminApp from "@/commerce/admin";
@@ -96,7 +98,21 @@ Even if the client guard were bypassed, layers 2 and 3 keep the store data safe.
 
 ---
 
-## 4. After installation
+## 4. The StoreAdmin agent (admin copilot)
+
+The template ships an AI copilot for store operators:
+
+- **Agent definition** — [`base44/agents/commerce/StoreAdmin.jsonc`](./base44/agents/commerce/StoreAdmin.jsonc), registered as **`commerce/StoreAdmin`** (the folder namespaces the agent, exactly like functions). The hosted runtime registers it when the file lands; on the CLI path run `npx base44 agents push`.
+- **Tools** — the `commerce/*` backend functions attached directly (`commerce/admin-products`, `commerce/admin-orders`, …, `commerce/seed-store`, plus read-only `commerce/storefront-catalog` for enumerating product variations). Tool calls run **with the chatting user's credentials**, so `requireAdmin()` in every admin function still authorizes the actual user — the agent has no entity tools and no service-role shortcut; a non-admin chatting with it gets `401/403` from every admin operation.
+- **No `model` field, on purpose.** The platform's default-model path accepts slash-namespaced tool names; explicitly setting a `model` currently rejects them (LLM tool names must match `^[a-zA-Z0-9_-]{1,128}$`). If you set a model, the bot fails at message time with a `tools.0.custom.name` error.
+- **Variant safety** — the agent is instructed to never auto-pick a variation: for variable products it fetches `{product, variations}` via `commerce/storefront-catalog get-product`, presents the variations as a table, and asks the operator which `variation_id` to use before touching an order, stock, or download grant.
+- **Bot UI** — `src/commerce/admin/bot/` (chat panel; "StoreAdmin bot" launcher at the bottom of the admin sidebar). Responses render as GitHub-flavored markdown via `react-markdown` + `remark-gfm`, so agent-produced tables (`| col |` with `|---|` separators) display properly. The panel lives behind the same `AuthGuard` as the rest of the admin.
+
+**Do not weaken the tool set.** The agent's power comes only from the admin functions' own `requireAdmin()` layer — don't add entity tools or service-role calls to the agent config, and keep `commerce/storefront-*` tools limited to the read-only catalog.
+
+---
+
+## 5. After installation
 
 - **Register the template in the app's `AGENTS.md`** so future agent sessions know the store exists — see [`implementation-guidelines.md`](./implementation-guidelines.md) §1 for the exact snippet.
 - Continue with [`implementation-guidelines.md`](./implementation-guidelines.md) for storefront building, Stripe wiring, scheduled maintenance, emails, webhooks, and operational limits.

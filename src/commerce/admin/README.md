@@ -11,10 +11,11 @@ Tailwind + shadcn/ui + React Router) to get a full store back office.
 
 1. Deploy the backend first (`base44/` entities + functions — see the root README).
 2. Copy this folder to `src/commerce/admin/` in your app.
-3. Install extra deps (everything else comes with the default template):
+3. Install extra deps (everything else, including `react-markdown`, comes with
+   the default template):
 
    ```bash
-   npm i sonner recharts
+   npm i sonner recharts remark-gfm
    ```
 
 4. Mount the app in your router:
@@ -40,7 +41,11 @@ The folder is self-contained; it only imports from:
   Base44's default app template; if your app uses a default export instead,
   adjust the single import in `lib/api.js`)
 - `@/components/ui/*` — the host app's shadcn/ui kit
-- `react-router-dom`, `lucide-react`, `sonner`, `recharts`
+- `react-router-dom`, `lucide-react`, `sonner`, `recharts`, `react-markdown`, `remark-gfm`
+
+The StoreAdmin bot panel (`bot/`) additionally requires the `commerce/StoreAdmin`
+agent (`base44/agents/commerce/StoreAdmin.jsonc`), which uses the `commerce/*`
+backend functions directly as its tools.
 
 ### Required shadcn/ui primitives
 
@@ -60,6 +65,7 @@ npx shadcn@latest add <component>
 index.jsx        AdminApp: providers → auth guard → layout → routes
 routes.jsx       Route table + <AdminRoutes/>
 layout/          AdminLayout, Sidebar, Topbar, AuthGuard (admin-role gate), AccessDenied
+bot/             StoreAdminBot (chat panel over the commerce/StoreAdmin agent), Markdown (GFM renderer)
 context/         SettingsContext (store settings + first-run seeding), BasePathContext
 hooks/           useAsync, usePagedList, useMoney, useDebounce
 lib/             api (function calls), constants, format, geo-data, order/product utils

@@ -8,6 +8,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  Sparkles,
   Users,
   Webhook,
 } from "lucide-react";
@@ -49,8 +50,8 @@ const NAV = [
   },
 ];
 
-/** Left navigation. `onNavigate` closes the mobile sheet. */
-export default function Sidebar({ onNavigate }) {
+/** Left navigation. `onNavigate` closes the mobile sheet; `onOpenBot` opens the StoreAdmin bot panel. */
+export default function Sidebar({ onNavigate, onOpenBot }) {
   const href = useAdminHref();
   const location = useLocation();
   const [processingCount, setProcessingCount] = useState(null);
@@ -112,6 +113,18 @@ export default function Sidebar({ onNavigate }) {
           </div>
         ))}
       </nav>
+      {onOpenBot && (
+        <div className="border-t p-3">
+          <button
+            type="button"
+            onClick={onOpenBot}
+            className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+            <span className="flex-1 text-left">StoreAdmin bot</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
