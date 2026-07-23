@@ -1,0 +1,23 @@
+{
+  "name": "commerce.TaxClass",
+  "type": "object",
+  "description": "Tax class grouping products for rate matching. Seeded: standard, reduced-rate, zero-rate.",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique slug (enforced in admin UI / seed)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["slug", "name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

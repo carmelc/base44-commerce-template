@@ -1,0 +1,73 @@
+{
+  "name": "commerce.Cart",
+  "type": "object",
+  "description": "Storefront cart session (a self-contained cart + checkout-draft). Access is exclusively via commerce/storefront-cart using the cart_token bearer credential; items store no prices — pricing is resolved at read time.",
+  "properties": {
+    "cart_token": {
+      "type": "string",
+      "description": "Random uuid; the guest bearer credential. Treat as a secret."
+    },
+    "customer_email": {
+      "type": "string",
+      "description": "Set when the caller is known (login or checkout); used for cart merge"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_key": { "type": "string", "description": "Stable key within the cart" },
+          "product_id": { "type": "string" },
+          "variation_id": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "attributes": {
+            "type": "array",
+            "description": "Chosen variation attributes for display",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "option": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "coupon_codes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "shipping_address": {
+      "type": "object",
+      "description": "Destination used for zone matching and tax preview",
+      "properties": {
+        "country": { "type": "string" },
+        "state": { "type": "string" },
+        "postcode": { "type": "string" },
+        "city": { "type": "string" }
+      }
+    },
+    "chosen_shipping_method": {
+      "type": "string",
+      "description": "ShippingZoneMethod id"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "converted", "abandoned"],
+      "default": "active"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "now + 48h, refreshed on touch; expired carts cleared via commerce/admin-tools clear-abandoned-carts"
+    }
+  },
+  "required": ["cart_token"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

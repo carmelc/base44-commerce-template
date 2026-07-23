@@ -1,0 +1,48 @@
+{
+  "name": "commerce.PaymentGateway",
+  "type": "object",
+  "description": "Payment gateway configuration (data model only — no processing). Seeded: bacs, cheque, cod, stripe (placeholder). Secrets are never stored here; use Base44 secrets.",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique gateway id, e.g. bacs | cheque | cod | stripe"
+    },
+    "title": {
+      "type": "string",
+      "description": "Customer-facing title shown at checkout"
+    },
+    "description": {
+      "type": "string",
+      "description": "Customer-facing description/instructions shown at checkout"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Display order at checkout and in admin"
+    },
+    "method_title": {
+      "type": "string",
+      "description": "Admin-facing label"
+    },
+    "method_description": {
+      "type": "string",
+      "description": "Admin-facing description"
+    },
+    "settings": {
+      "type": "object",
+      "description": "Per-gateway settings. bacs: {account_details: [{account_name, account_number, bank_name, sort_code, iban, bic}]}; cod: {enable_for_methods, enable_for_virtual}; stripe: {connector: \"stripe\"} placeholder — see implementation-guidelines.md"
+    }
+  },
+  "required": ["slug"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

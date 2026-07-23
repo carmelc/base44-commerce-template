@@ -1,0 +1,57 @@
+{
+  "name": "commerce.Webhook",
+  "type": "object",
+  "description": "Outgoing webhook definition. Dispatched by shared/commerce/webhooks with X-Commerce-Webhook-* headers and HMAC-SHA256 signature.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "paused", "disabled"],
+      "default": "active",
+      "description": "Only active webhooks are delivered; auto-disabled after 5 consecutive failures"
+    },
+    "topic": {
+      "type": "string",
+      "description": "resource.event, e.g. order.created, product.updated"
+    },
+    "resource": {
+      "type": "string",
+      "enum": ["order", "product", "customer", "coupon"],
+      "description": "Derived from topic"
+    },
+    "event": {
+      "type": "string",
+      "enum": ["created", "updated", "deleted", "restored"],
+      "description": "Derived from topic"
+    },
+    "delivery_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Endpoint receiving POST deliveries"
+    },
+    "secret": {
+      "type": "string",
+      "description": "HMAC-SHA256 signing secret (see implementation-guidelines.md on storage tradeoffs)"
+    },
+    "api_version": {
+      "type": "string",
+      "default": "v3",
+      "description": "Payload format version"
+    },
+    "failure_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Consecutive delivery failures. Maintained by shared/commerce/webhooks; auto-disable at 5."
+    }
+  },
+  "required": ["name", "topic", "delivery_url"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

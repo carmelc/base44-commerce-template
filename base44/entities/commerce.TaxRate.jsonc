@@ -1,0 +1,68 @@
+{
+  "name": "commerce.TaxRate",
+  "type": "object",
+  "description": "A tax rate matched by location and tax class. Applied by shared/tax per priority/compound rules.",
+  "properties": {
+    "country": {
+      "type": "string",
+      "default": "",
+      "description": "ISO 3166-1 alpha-2 country code; empty = any"
+    },
+    "state": {
+      "type": "string",
+      "default": "",
+      "description": "State/province code; empty = any"
+    },
+    "postcodes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Postcode patterns; supports wildcard (90*) and numeric range (1000...2000); empty = any"
+    },
+    "cities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "City names; empty = any"
+    },
+    "rate": {
+      "type": "number",
+      "description": "Percentage rate, e.g. 20 for 20%"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Label, e.g. VAT"
+    },
+    "priority": {
+      "type": "integer",
+      "default": 1,
+      "description": "Only one matching rate per priority is applied; lower priorities apply first"
+    },
+    "compound": {
+      "type": "boolean",
+      "default": false,
+      "description": "Applied on top of previously accumulated taxes"
+    },
+    "shipping": {
+      "type": "boolean",
+      "default": true,
+      "description": "Rate also applies to shipping"
+    },
+    "tax_class": {
+      "type": "string",
+      "default": "standard",
+      "description": "TaxClass slug this rate belongs to"
+    },
+    "menu_order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Tie-breaker among rates of the same priority"
+    }
+  },
+  "required": ["rate", "name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

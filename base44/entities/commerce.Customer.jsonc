@@ -1,0 +1,96 @@
+{
+  "name": "commerce.Customer",
+  "type": "object",
+  "description": "Store customer, supporting guests (no linked user) and registered users. Self-service access is mediated by commerce/storefront-account.",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Unique (enforced in commerce/admin-customers / checkout upsert)"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Base44 User id when registered; empty = guest"
+    },
+    "is_guest": {
+      "type": "boolean",
+      "description": "Maintained by checkout/admin-customers: true when no linked Base44 user"
+    },
+    "billing": {
+      "type": "object",
+      "properties": {
+        "first_name": { "type": "string" },
+        "last_name": { "type": "string" },
+        "company": { "type": "string" },
+        "address_1": { "type": "string" },
+        "address_2": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "postcode": { "type": "string" },
+        "country": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" }
+      }
+    },
+    "shipping": {
+      "type": "object",
+      "properties": {
+        "first_name": { "type": "string" },
+        "last_name": { "type": "string" },
+        "company": { "type": "string" },
+        "address_1": { "type": "string" },
+        "address_2": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "postcode": { "type": "string" },
+        "country": { "type": "string" },
+        "phone": { "type": "string" }
+      }
+    },
+    "is_paying_customer": {
+      "type": "boolean",
+      "default": false,
+      "description": "Derived from paid orders. Maintained by order lifecycle / commerce/admin-customers recalculate-stats."
+    },
+    "orders_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Derived. Maintained by order lifecycle / commerce/admin-customers recalculate-stats."
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Derived. Maintained by order lifecycle / commerce/admin-customers recalculate-stats."
+    },
+    "avatar_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "meta_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["email"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
