@@ -35,7 +35,7 @@
     },
     "settings": {
       "type": "object",
-      "description": "Per-gateway settings. bacs: {account_details: [{account_name, account_number, bank_name, sort_code, iban, bic}]}; cod: {enable_for_methods, enable_for_virtual}; stripe: {connector: \"stripe\"} placeholder — see implementation-guidelines.md"
+      "description": "Per-gateway settings. bacs: {account_details: [{account_name, account_number, bank_name, sort_code, iban, bic}]}; cod: {enable_for_methods, enable_for_virtual}; stripe: {connector: \"stripe\"} placeholder — see skills/commerce/SKILL.md"
     }
   },
   "required": ["slug"],

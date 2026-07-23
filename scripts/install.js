@@ -17,15 +17,16 @@
  *   ../base44/shared/commerce/           →  ../../../base44/shared/commerce/
  *   ../base44/agents/commerce/           →  ../../../base44/agents/commerce/
  *   ../src/commerce/admin/               →  ../../../src/commerce/admin/
+ *   ../skills/commerce/                  →  ../../../skills/commerce/
  *
  * Merge semantics: directories are merged — files owned by the template are
  * overwritten (so re-running after a template update is safe), everything
  * else in the app is left untouched.
  *
  * This is only the static part of the install. The remaining steps (deps,
- * mounting the /admin route, admin role, seeding) are described in
- * ../installation-guidelines.md; post-install guidance lives in
- * ../implementation-guidelines.md.
+ * mounting the /admin route, admin role, seeding, AGENTS.md registration)
+ * are described in ../installation-guidelines.md; post-install guidance
+ * lives in the commerce skill (../skills/commerce/SKILL.md).
  *
  * Written with dynamic import() and process.argv[1] (instead of require/
  * __dirname) so it runs unchanged whether the host app's package.json is
@@ -98,6 +99,8 @@
     // StoreAdmin agent — registered as "commerce/StoreAdmin" (folder = namespace).
     { label: "agents", from: ["base44", "agents", "commerce"], to: ["base44", "agents", "commerce"] },
     { label: "admin UI", from: ["src", "commerce", "admin"], to: ["src", "commerce", "admin"] },
+    // Commerce skill — day-2 guidance agents read before working on the store.
+    { label: "skills", from: ["skills", "commerce"], to: ["skills", "commerce"] },
   ];
   for (const job of dirJobs) {
     const src = path.join(templateRoot, ...job.from);
@@ -113,7 +116,7 @@
     "  1. npm i sonner recharts remark-gfm (if not already present)\n" +
     '  2. Mount the admin router: <Route path="/admin/*" element={<AdminApp />} />\n' +
     "  3. Grant your user the admin role, open /admin and initialize store defaults\n" +
-    "  4. Register the template in AGENTS.md (see implementation-guidelines.md §1)\n" +
+    "  4. Register the template + skill in AGENTS.md (see installation-guidelines.md §5)\n" +
     "  5. CLI installs only: npx base44 agents push (the hosted runtime syncs agents on write)"
   );
 })();

@@ -164,7 +164,7 @@ async function placeOrder(sr: any, req: Request, user: any, payload: any): Promi
   // (4) customer upsert by billing email
   const notices: string[] = [];
   if (payload.create_account && !user) {
-    notices.push("account_creation_requires_login"); // see implementation-guidelines.md §Guest access
+    notices.push("account_creation_requires_login"); // see skills/commerce/SKILL.md §Guest access
   }
   const customer = await upsertCustomer(sr, billing, shippingAddress, user);
 
@@ -239,7 +239,7 @@ async function placeOrder(sr: any, req: Request, user: any, payload: any): Promi
       // Payment processing is intentionally not wired in this template.
       payment = {
         status: "not_implemented",
-        note: "Create a PaymentIntent here and call confirm-payment after success. See implementation-guidelines.md §Stripe.",
+        note: "Create a PaymentIntent here and call confirm-payment after success. See skills/commerce/SKILL.md §Stripe.",
       };
       break;
     default:

@@ -53,7 +53,7 @@ export default function InventorySettings() {
             <p className="text-xs text-muted-foreground">
               Hold stock for unpaid orders for this many minutes. When the limit is reached, the
               pending order is cancelled and its stock released. Release runs opportunistically —
-              see implementation-guidelines.md §Scheduled tasks.
+              see skills/commerce/SKILL.md §Scheduled tasks.
             </p>
           </div>
 

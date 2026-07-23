@@ -11,7 +11,7 @@ It provides a full-featured **commerce data model and behavior** (product types,
 - **Shared commerce engine** (`base44/shared/commerce/`) — totals, tax, shipping, coupons, stock, order lifecycle, webhook dispatch (HMAC-signed), emails, plus static country/currency/continent data.
 - **Admin UI** (`src/commerce/admin/`) — a React/Tailwind/shadcn admin with a familiar store back-office information architecture: dashboard, orders, products, coupons, customers, reports, full settings, webhooks. Admin-role gated.
 - **StoreAdmin agent + bot** — an AI copilot (`base44/agents/commerce/StoreAdmin.jsonc`, registered as `commerce/StoreAdmin`) with the `commerce/*` functions attached directly as tools (calls run as the chatting user → `requireAdmin()` still applies), variant-aware order editing, plus a chat panel in the admin sidebar with GFM markdown-table rendering.
-- **Docs** — this README, [`installation-guidelines.md`](./installation-guidelines.md), [`implementation-guidelines.md`](./implementation-guidelines.md), and the API references in [`docs/`](./docs/).
+- **Docs** — this README, [`installation-guidelines.md`](./installation-guidelines.md), the commerce skill [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md) (operating & extending, installed into the app so agents pick it up natively), and the API references in [`docs/`](./docs/).
 
 ## Repo map
 
@@ -33,8 +33,11 @@ base44-commerce-template/
 │   └── api-storefront.md  storefront function reference (build your own shopfront)
 ├── scripts/
 │   └── install.js         static installer (run from <app>/examples/commerce/scripts/)
+├── skills/
+│   └── commerce/
+│       └── SKILL.md       commerce skill — operating & extending after installation
+│                          (copied into the app's skills/ so agents know the store natively)
 ├── installation-guidelines.md   installing into an app (scripted or manual)
-├── implementation-guidelines.md operating & extending after installation
 └── README.md
 ```
 
@@ -75,12 +78,12 @@ If you build on Base44's hosted platform, use the Base44 agent/MCP to write the 
 ## What's NOT included
 
 - **No visitor/storefront UI.** The storefront **API** is complete (`commerce/storefront-*` functions); building the shopfront is up to you — see [`docs/api-storefront.md`](./docs/api-storefront.md).
-- **No live payment processing.** Payment gateways are modeled as data (bank transfer / cheque / COD work as manual flows). A **Stripe** gateway placeholder is included; wire it via the Base44 Stripe connector — see [`implementation-guidelines.md`](./implementation-guidelines.md) §Stripe wiring.
-- **No scheduled workflows shipped.** Base44 *does* have a scheduler, but this template ships no workflow files — time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** where possible, and for the rest you (or the Base44 agent) create scheduled workflows that call `commerce/admin-tools`/`commerce/admin-orders` actions — see *Scheduled work* in [`implementation-guidelines.md`](./implementation-guidelines.md).
+- **No live payment processing.** Payment gateways are modeled as data (bank transfer / cheque / COD work as manual flows). A **Stripe** gateway placeholder is included; wire it via the Base44 Stripe connector — see [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md) §Stripe wiring.
+- **No scheduled workflows shipped.** Base44 *does* have a scheduler, but this template ships no workflow files — time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** where possible, and for the rest you (or the Base44 agent) create scheduled workflows that call `commerce/admin-tools`/`commerce/admin-orders` actions — see *Scheduled work* in [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md).
 
 ## Next steps
 
 - **Install into your app:** [`installation-guidelines.md`](./installation-guidelines.md)
-- **Operate & extend:** [`implementation-guidelines.md`](./implementation-guidelines.md)
+- **Operate & extend:** the commerce skill — [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md)
 - **Build a storefront:** [`docs/api-storefront.md`](./docs/api-storefront.md)
 - **Admin automation / alternative admin:** [`docs/api-admin.md`](./docs/api-admin.md)

@@ -34,7 +34,7 @@
     },
     "secret": {
       "type": "string",
-      "description": "HMAC-SHA256 signing secret (see implementation-guidelines.md on storage tradeoffs)"
+      "description": "HMAC-SHA256 signing secret (see skills/commerce/SKILL.md on storage tradeoffs)"
     },
     "api_version": {
       "type": "string",

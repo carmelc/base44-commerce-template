@@ -103,7 +103,7 @@ async function create(sr: any, payload: any, actor: string): Promise<any> {
     await dispatch(sr, "order.updated", order);
   }
 
-  // Stripe placeholder — see implementation-guidelines.md §Stripe wiring
+  // Stripe placeholder — see skills/commerce/SKILL.md §Stripe wiring
   const gatewayRefund = payload.refund_payment ? "not_implemented" : undefined;
   return { refund, order, ...(gatewayRefund ? { gateway_refund: gatewayRefund } : {}) };
 }

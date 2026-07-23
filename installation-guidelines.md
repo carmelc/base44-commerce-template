@@ -1,6 +1,6 @@
 # Installation Guidelines
 
-How to install the Base44 Commerce Template into an existing Base44 app. Once installed, day-2 guidance — extending, operating, and building on the template — lives in [`implementation-guidelines.md`](./implementation-guidelines.md), alongside the API references in [`docs/`](./docs/).
+How to install the Base44 Commerce Template into an existing Base44 app. Once installed, day-2 guidance — extending, operating, and building on the template — lives in the **commerce skill** at [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md) (installed into the app at the same path), alongside the API references in [`docs/`](./docs/).
 
 > **If you are a Base44 agent working inside the runtime, read this first:**
 > - **Skip the `npx base44` commands.** The runtime deploys functions and pushes entities automatically the moment you write the files — writing a resource file *is* the deploy.
@@ -26,13 +26,15 @@ Relative to the script's own folder (`examples/commerce/scripts/`), it copies:
 | `../base44/shared/commerce/` | `../../../base44/shared/commerce/` |
 | `../base44/agents/commerce/` | `../../../base44/agents/commerce/` |
 | `../src/commerce/admin/` | `../../../src/commerce/admin/` |
+| `../skills/commerce/` | `../../../skills/commerce/` |
 
-Directories are merged: files owned by the template are overwritten (re-running after a template update is safe); everything else in your app is left untouched. The template repo itself stays under `examples/commerce/` — including this file, `implementation-guidelines.md` and `docs/` — so agents and teammates can consult it later.
+Directories are merged: files owned by the template are overwritten (re-running after a template update is safe); everything else in your app is left untouched. The template repo itself stays under `examples/commerce/` — including this file, the commerce skill and `docs/` — so agents and teammates can consult it later.
 
 **Manual.** Equivalently, copy by hand:
 
 1. Copy `base44/entities/commerce.*`, `base44/functions/commerce/*`, `base44/shared/commerce/*` and `base44/agents/commerce/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
 2. Copy `src/commerce/admin/` → `src/commerce/admin/`.
+3. Copy `skills/commerce/` → `skills/commerce/` (the commerce skill — day-2 guidance for agents working on the app).
 
 Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these folders (the defaults do).
 
@@ -114,5 +116,16 @@ The template ships an AI copilot for store operators:
 
 ## 5. After installation
 
-- **Register the template in the app's `AGENTS.md`** so future agent sessions know the store exists — see [`implementation-guidelines.md`](./implementation-guidelines.md) §1 for the exact snippet.
-- Continue with [`implementation-guidelines.md`](./implementation-guidelines.md) for storefront building, Stripe wiring, scheduled maintenance, emails, webhooks, and operational limits.
+- **Register the template and its skill in the app's `AGENTS.md`** so future agent sessions know the store exists and read the skill before touching it. Add the template to an **Installed templates** section and point at the skill from a **My Skills** section (create either section if it doesn't exist):
+
+  ```md
+  ## Installed templates
+
+  - commerce
+
+  ## My Skills
+
+  - `skills/commerce/SKILL.md` — Base44 Commerce template: 24 `commerce.*` entities, 14 `commerce/*` backend functions (storefront + admin APIs), the shared commerce engine under `base44/shared/commerce/`, the store admin UI mounted at `/admin`, and the `commerce/StoreAdmin` agent (admin copilot bot in the admin sidebar). Read before working on store features — catalog, cart, checkout, orders, payments, emails, webhooks, or the admin UI.
+  ```
+
+- Continue with the commerce skill — [`skills/commerce/SKILL.md`](./skills/commerce/SKILL.md) — for storefront building, Stripe wiring, scheduled maintenance, emails, webhooks, and operational limits.

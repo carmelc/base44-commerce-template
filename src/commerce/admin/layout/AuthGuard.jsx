@@ -12,7 +12,7 @@ export function useAuth() {
 
 /**
  * Blocks the admin UI unless the caller is an authenticated user with
- * role === "admin". Do NOT weaken this check — see implementation-guidelines.md.
+ * role === "admin". Do NOT weaken this check — see skills/commerce/SKILL.md.
  * (Server-side RLS + requireAdmin() in functions enforce this independently.)
  */
 export default function AuthGuard({ children }) {

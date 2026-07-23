@@ -2,7 +2,7 @@
  * Full-collection scan helper. Base44's filter() is exact-match with a 5k page
  * cap and no total count, so server-side search/aggregation loops pages of 500.
  * Keep `cap` sane — reports over very large stores should move to a
- * materialized stats entity (see implementation-guidelines.md).
+ * materialized stats entity (see skills/commerce/SKILL.md).
  */
 
 export interface ScanOpts {
