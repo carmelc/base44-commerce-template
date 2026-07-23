@@ -1,0 +1,39 @@
+{
+  "name": "commerce.ProductAttribute",
+  "type": "object",
+  "description": "Global product attribute (e.g. Color, Size). Terms live in ProductAttributeTerm.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "description": "Unique slug (enforced in admin UI / functions)"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["select"],
+      "default": "select",
+      "description": "Attribute type"
+    },
+    "order_by": {
+      "type": "string",
+      "enum": ["menu_order", "name", "name_num", "id"],
+      "default": "menu_order",
+      "description": "Default term sort order"
+    },
+    "has_archives": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable attribute archives"
+    }
+  },
+  "required": ["name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

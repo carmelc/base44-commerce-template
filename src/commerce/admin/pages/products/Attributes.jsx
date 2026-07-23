@@ -34,7 +34,7 @@ export default function Attributes() {
   const navigate = useNavigate();
   const href = useAdminHref();
   const { data: attributes, loading, refetch } = useAsync(
-    () => base44.entities.ProductAttribute.list("name", 500),
+    () => base44.entities["commerce.ProductAttribute"].list("name", 500),
     []
   );
   const [form, setForm] = useState({ ...BLANK });
@@ -66,8 +66,8 @@ export default function Attributes() {
         order_by: form.order_by,
         type: "select",
       };
-      if (form.id) await base44.entities.ProductAttribute.update(form.id, payload);
-      else await base44.entities.ProductAttribute.create(payload);
+      if (form.id) await base44.entities["commerce.ProductAttribute"].update(form.id, payload);
+      else await base44.entities["commerce.ProductAttribute"].create(payload);
       toast.success(form.id ? "Attribute updated" : "Attribute created");
       reset();
       refetch();
@@ -81,7 +81,7 @@ export default function Attributes() {
   const doDelete = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ProductAttribute.delete(confirmDelete.id);
+      await base44.entities["commerce.ProductAttribute"].delete(confirmDelete.id);
       toast.success("Attribute deleted");
       if (form.id === confirmDelete.id) reset();
       setConfirmDelete(null);

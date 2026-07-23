@@ -1,0 +1,291 @@
+{
+  "name": "commerce.Product",
+  "type": "object",
+  "description": "A store product (simple, grouped, external, or variable). WooCommerce-parity product model.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Product name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL slug, unique (enforced in commerce/admin-products)"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["simple", "grouped", "external", "variable"],
+      "default": "simple",
+      "description": "Product type"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "pending", "private", "publish"],
+      "default": "draft",
+      "description": "Publication status"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured product flag"
+    },
+    "catalog_visibility": {
+      "type": "string",
+      "enum": ["visible", "catalog", "search", "hidden"],
+      "default": "visible",
+      "description": "Where the product is visible in the catalog"
+    },
+    "description": {
+      "type": "string",
+      "format": "richtext",
+      "description": "Full product description (HTML)"
+    },
+    "short_description": {
+      "type": "string",
+      "description": "Short product description"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Stock keeping unit, unique incl. variations (enforced in commerce/admin-products)"
+    },
+    "regular_price": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Regular price"
+    },
+    "sale_price": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Sale price"
+    },
+    "date_on_sale_from": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start of the sale window"
+    },
+    "date_on_sale_to": {
+      "type": "string",
+      "format": "date-time",
+      "description": "End of the sale window"
+    },
+    "price": {
+      "type": "number",
+      "description": "Derived: sale_price when sale is active, else regular_price. Maintained by commerce/admin-products."
+    },
+    "on_sale": {
+      "type": "boolean",
+      "default": false,
+      "description": "Derived: whether the sale window is currently active. Maintained by commerce/admin-products."
+    },
+    "virtual": {
+      "type": "boolean",
+      "default": false,
+      "description": "Virtual product (no shipping)"
+    },
+    "downloadable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Downloadable product"
+    },
+    "downloads": {
+      "type": "array",
+      "description": "Downloadable files",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "file_url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "download_limit": {
+      "type": "integer",
+      "default": -1,
+      "description": "Max downloads per permission, -1 = unlimited"
+    },
+    "download_expiry": {
+      "type": "integer",
+      "default": -1,
+      "description": "Days until download access expires, -1 = never"
+    },
+    "external_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Target URL for external/affiliate products"
+    },
+    "button_text": {
+      "type": "string",
+      "description": "Buy-button text for external products"
+    },
+    "tax_status": {
+      "type": "string",
+      "enum": ["taxable", "shipping", "none"],
+      "default": "taxable",
+      "description": "Tax status"
+    },
+    "tax_class": {
+      "type": "string",
+      "default": "standard",
+      "description": "TaxClass slug"
+    },
+    "manage_stock": {
+      "type": "boolean",
+      "default": false,
+      "description": "Track stock quantity for this product"
+    },
+    "stock_quantity": {
+      "type": "integer",
+      "description": "Current stock level (when manage_stock)"
+    },
+    "stock_status": {
+      "type": "string",
+      "enum": ["instock", "outofstock", "onbackorder"],
+      "default": "instock",
+      "description": "Stock status; derived from stock_quantity/backorders when manage_stock"
+    },
+    "backorders": {
+      "type": "string",
+      "enum": ["no", "notify", "yes"],
+      "default": "no",
+      "description": "Allow backorders"
+    },
+    "low_stock_amount": {
+      "type": "integer",
+      "description": "Low-stock notification threshold; overrides store default"
+    },
+    "sold_individually": {
+      "type": "boolean",
+      "default": false,
+      "description": "Limit purchases to 1 per order"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Weight in store weight unit"
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Dimensions in store dimension unit",
+      "properties": {
+        "length": { "type": "number" },
+        "width": { "type": "number" },
+        "height": { "type": "number" }
+      }
+    },
+    "shipping_class_id": {
+      "type": "string",
+      "description": "ShippingClass id"
+    },
+    "reviews_allowed": {
+      "type": "boolean",
+      "default": true,
+      "description": "Allow customer reviews"
+    },
+    "average_rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Derived from approved reviews. Maintained by commerce/admin-reviews."
+    },
+    "rating_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Derived count of approved review ratings. Maintained by commerce/admin-reviews."
+    },
+    "upsell_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Upsell Product ids"
+    },
+    "cross_sell_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Cross-sell Product ids"
+    },
+    "grouped_products": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Child Product ids for type=grouped"
+    },
+    "purchase_note": {
+      "type": "string",
+      "description": "Note shown to the customer after purchase"
+    },
+    "category_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "ProductCategory ids"
+    },
+    "tag_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "ProductTag ids"
+    },
+    "images": {
+      "type": "array",
+      "description": "Product images; first image = primary. URLs from Core.UploadFile.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "src": { "type": "string", "format": "uri" },
+          "name": { "type": "string" },
+          "alt": { "type": "string" },
+          "position": { "type": "integer" }
+        }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "description": "Assigned attributes (global via attribute_id, or custom/local when attribute_id is empty)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attribute_id": { "type": "string", "description": "ProductAttribute id; empty for custom/local attribute" },
+          "name": { "type": "string" },
+          "position": { "type": "integer" },
+          "visible": { "type": "boolean", "description": "Visible on the product page" },
+          "variation": { "type": "boolean", "description": "Used for variations" },
+          "options": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "default_attributes": {
+      "type": "array",
+      "description": "Pre-selected variation attributes for variable products",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attribute_id": { "type": "string" },
+          "name": { "type": "string" },
+          "option": { "type": "string" }
+        }
+      }
+    },
+    "menu_order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Custom sort position"
+    },
+    "total_sales": {
+      "type": "integer",
+      "default": 0,
+      "description": "Units sold. Maintained by the order lifecycle (shared/stock)."
+    },
+    "meta_data": {
+      "type": "array",
+      "description": "Custom key/value metadata",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      }
+    }
+  },
+  "required": ["name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

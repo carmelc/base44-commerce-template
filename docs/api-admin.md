@@ -4,41 +4,41 @@ For building store automation or an alternative admin UI against the Base44 Comm
 
 ## Data-access contract
 
-Two access styles. **Reads are direct** entity SDK calls; **mutations with side effects go through `admin-*` functions**; simple config entities are **direct CRUD** (protected by admin-only RLS).
+Two access styles. **Reads are direct** entity SDK calls; **mutations with side effects go through `commerce/admin-*` functions**; simple config entities are **direct CRUD** (protected by admin-only RLS).
 
 | Resource | Reads | Writes | Why |
 |---|---|---|---|
-| Product, ProductVariation | direct (`filter`/`get`/`list`) | **`admin-products`** | derived pricing/stock, taxonomy counts, webhooks |
-| Order, OrderNote | direct | **`admin-orders`** | lifecycle side effects (stock, emails, webhooks, dates) |
-| OrderRefund | direct | **`admin-refunds`** | restock, totals, refund status transition |
-| Coupon | direct | **`admin-coupons`** | code normalization/uniqueness, webhooks |
-| Customer | direct | **`admin-customers`** | email uniqueness, invite/link, stats |
-| ProductReview | direct | **`admin-reviews`** | rating recalculation |
-| ProductCategory, ProductTag, ProductAttribute, ProductAttributeTerm, ShippingClass | direct | **direct CRUD** | plain config; RLS enforces admin-only |
-| TaxClass, TaxRate, ShippingZone, ShippingZoneMethod, PaymentGateway | direct | **direct CRUD** | config; consumed by the pricing engine at read time |
-| StoreSettings | direct | **direct CRUD** (one record per `group_id`) | grouped config |
-| Webhook | direct | **direct CRUD** (+ `admin-webhooks` for test/redeliver) | definition is data; dispatch is engine |
-| WebhookDelivery, EmailLog | direct (read-only logs) | written by the engine | audit logs |
+| commerce.Product, commerce.ProductVariation | direct (`filter`/`get`/`list`) | **`commerce/admin-products`** | derived pricing/stock, taxonomy counts, webhooks |
+| commerce.Order, commerce.OrderNote | direct | **`commerce/admin-orders`** | lifecycle side effects (stock, emails, webhooks, dates) |
+| commerce.OrderRefund | direct | **`commerce/admin-refunds`** | restock, totals, refund status transition |
+| commerce.Coupon | direct | **`commerce/admin-coupons`** | code normalization/uniqueness, webhooks |
+| commerce.Customer | direct | **`commerce/admin-customers`** | email uniqueness, invite/link, stats |
+| commerce.ProductReview | direct | **`commerce/admin-reviews`** | rating recalculation |
+| commerce.ProductCategory, commerce.ProductTag, commerce.ProductAttribute, commerce.ProductAttributeTerm, commerce.ShippingClass | direct | **direct CRUD** | plain config; RLS enforces admin-only |
+| commerce.TaxClass, commerce.TaxRate, commerce.ShippingZone, commerce.ShippingZoneMethod, commerce.PaymentGateway | direct | **direct CRUD** | config; consumed by the pricing engine at read time |
+| commerce.StoreSettings | direct | **direct CRUD** (one record per `group_id`) | grouped config |
+| commerce.Webhook | direct | **direct CRUD** (+ `commerce/admin-webhooks` for test/redeliver) | definition is data; dispatch is engine |
+| commerce.WebhookDelivery, commerce.EmailLog | direct (read-only logs) | written by the engine | audit logs |
 
 All entities carry admin-only RLS on the operations they restrict (catalog entities are public-read, admin-write; transactional entities are admin-only on all ops). A direct write from a non-admin is rejected by the backend regardless of the UI.
 
 ## Invocation & envelope
 
 ```js
-const res = await base44.functions.invoke("admin-products", { action: "search", q: "shirt", limit: 20 });
+const res = await base44.functions.invoke("commerce/admin-products", { action: "search", q: "shirt", limit: 20 });
 const { rows, has_next } = res.data.data;   // res.data = { success, data }; .data = payload
 ```
-Success: `{ success: true, data }`. Failure: `{ success: false, error, code }` with the HTTP status set. Auth: every `admin-*` function calls `requireAdmin()` → **401** if not signed in, **403** if signed in without the `admin` role, before any data access (via the service role).
+Success: `{ success: true, data }`. Failure: `{ success: false, error, code }` with the HTTP status set. Auth: every `commerce/admin-*` function calls `requireAdmin()` → **401** if not signed in, **403** if signed in without the `admin` role, before any data access (via the service role).
 
 ## Pagination & search
 
 - No total-count API. List endpoints use **limit + skip** with a **`limit+1`** probe: request one extra row; if it comes back, there's a next page. `search` actions return `{ rows, has_next }`.
 - Entity `filter` is **exact-match only** — free-text search is server-side (`search` actions scan + JS-match), so use those for name/email/code lookups rather than `filter`.
-- Status-tab counts come from dedicated count actions (`admin-orders` `status-counts`), not from search.
+- Status-tab counts come from dedicated count actions (`commerce/admin-orders` `status-counts`), not from search.
 
 ---
 
-## admin-products
+## commerce/admin-products
 
 Actions: `save` · `delete` · `batch` · `duplicate` · `set-stock` · `search`
 
@@ -49,7 +49,7 @@ Actions: `save` · `delete` · `batch` · `duplicate` · `set-stock` · `search`
 - **`set-stock`** — `{ id, variation_id?, quantity }`. Sets quantity, re-derives status, sends low/out-of-stock admin emails on threshold crossings.
 - **`search`** — `{ q?, category_id?, type?, stock_status?, status?, sort?, limit?, skip? }` → `{ rows, has_next }`. `category_id` includes descendant categories.
 
-## admin-orders
+## commerce/admin-orders
 
 Actions: `create-draft` · `create` · `update` · `update-status` · `bulk-status` · `status-counts` · `search` · `recalculate` · `apply-coupon` · `remove-coupon` · `add-note` · `delete-note` · `send-email` · `grant-download` · `revoke-download` · `delete` · `release-expired-holds`
 
@@ -67,7 +67,7 @@ Actions: `create-draft` · `create` · `update` · `update-status` · `bulk-stat
 - **`apply-coupon` / `remove-coupon`** — `{ order_id, code }` (validates, then reprices; `409 order_locked` if not editable, `409 already_applied`).
 - **`add-note`** — `{ order_id, note, is_customer_note? }` (a customer note emails the customer) · **`delete-note`** — `{ note_id }`.
 - **`send-email`** — `{ order_id, type }` (re-send an order email, e.g. `customer_invoice`; `force`d).
-- **`grant-download`** — `{ order_id, product_id }` (creates `DownloadPermission`s for the product's files) · **`revoke-download`** — `{ permission_id }`.
+- **`grant-download`** — `{ order_id, product_id }` (creates `commerce.DownloadPermission`s for the product's files) · **`revoke-download`** — `{ permission_id }`.
 - **`delete`** — `{ order_id }` — only `pending`/`cancelled`/`failed` (`409 order_locked` otherwise); cascades notes/refunds/permissions; fires `order.deleted`.
 - **`release-expired-holds`** — cancels unpaid orders past `hold_expires_at` and restores their stock → `{ released }`.
 
@@ -87,21 +87,21 @@ Applied by the transition engine; each effect is flag-guarded so a re-entered st
 
 `total_sales` increments on first stock reduction, decrements on restore.
 
-## admin-refunds
+## commerce/admin-refunds
 
 Actions: `create` · `delete`
 
 - **`create`** — `{ order_id, amount, reason?, line_items?, restock_items?, refund_payment? }`. `line_items` specs: `{ line_id, quantity, refund_total, refund_tax? }`. Validates `amount` ≤ remaining refundable (`400 amount_exceeds_refundable`, `400 invalid_amount`). Restocks per line when `restock_items`. Updates `order.total_refunded`; a full refund transitions the order to `refunded`, otherwise sends `partial_refund` + `order.updated`. When `refund_payment: true`, the response includes `gateway_refund: "not_implemented"` (Stripe placeholder — the UI shows a notice). → `{ refund, order, gateway_refund? }`.
 - **`delete`** — `{ refund_id }`. Reverses `total_refunded`; adds a note warning that restocked items are **not** auto-un-restocked.
 
-## admin-coupons
+## commerce/admin-coupons
 
 Actions: `save` · `delete` · `batch` · `search`
 
 - **`save`** — `{ coupon }`. Lowercases + enforces unique `code` (`duplicate_code`); percent amount ≤ 100. Fires `coupon.created`/`updated`.
 - **`delete`** — `{ id }` (fires `coupon.deleted`) · **`batch`** — `{ create?, update?, delete? }` · **`search`** — `{ q?, limit?, skip? }` → `{ rows, has_next }` (matches code/description).
 
-## admin-customers
+## commerce/admin-customers
 
 Actions: `save` · `delete` · `search` · `invite` · `recalculate-stats`
 
@@ -111,18 +111,18 @@ Actions: `save` · `delete` · `search` · `invite` · `recalculate-stats`
 - **`invite`** — `{ email }` → `base44.users.inviteUser(email)`, links `user_id`.
 - **`recalculate-stats`** — `{ id }` → recomputes `orders_count`, `total_spent`, `is_paying_customer` from the customer's paid orders.
 
-## admin-reviews
+## commerce/admin-reviews
 
 Actions: `set-status` · `update` · `delete`. Each recomputes the product's `average_rating`/`rating_count` from approved reviews.
 - **`set-status`** — `{ id, status }` (`approved`|`hold`|`spam`|`trash`) · **`update`** — `{ id, rating?, review? }` · **`delete`** — `{ id }`.
 
-## admin-webhooks
+## commerce/admin-webhooks
 
-Actions: `test` · `redeliver` (webhook definitions themselves are direct `Webhook` CRUD).
-- **`test`** — `{ webhook_id }` → POSTs a sample payload, logs a `WebhookDelivery`, returns `{ delivery_id, response_code, success, duration_ms }`.
+Actions: `test` · `redeliver` (webhook definitions themselves are direct `commerce.Webhook` CRUD).
+- **`test`** — `{ webhook_id }` → POSTs a sample payload, logs a `commerce.WebhookDelivery`, returns `{ delivery_id, response_code, success, duration_ms }`.
 - **`redeliver`** — `{ delivery_id }` → re-sends the original request body.
 
-## admin-reports
+## commerce/admin-reports
 
 All actions scan orders on demand (counted = `date_paid` set, or status `processing`/`completed`). See implementation-guidelines §Reports for scaling.
 
@@ -140,7 +140,7 @@ All actions scan orders on demand (counted = `date_paid` set, or status `process
 | `categories-totals` / `tags-totals` | — | `{ total, terms: [{ id, name, count }] }` |
 | `attributes-totals` | — | `{ total, attributes: [{ id, name, terms }] }` |
 
-## admin-tools
+## commerce/admin-tools
 
 Actions: `status` · `recount-terms` · `recount-coupon-usage` · `recalculate-customer-stats-all` · `prune-webhook-deliveries` · `clear-abandoned-carts` · `regenerate-download-permissions`
 
@@ -152,6 +152,6 @@ Actions: `status` · `recount-terms` · `recount-coupon-usage` · `recalculate-c
 - **`clear-abandoned-carts`** — `{ older_than_days }`.
 - **`regenerate-download-permissions`** — `{ order_id }`.
 
-## seed-store
+## commerce/seed-store
 
 Not action-routed. Body `{ with_sample_data?: boolean }`. Requires admin. Runs a **canary schema check** first — on any incompatibility returns **422** `{ success:false, code:"schema_incompatible", errors:[{ entity, error }] }` and writes nothing. Otherwise seeds defaults idempotently and (if `with_sample_data` and the store has no products) a sample catalog. → `{ seeded: { settings_groups, gateways, tax_classes, zones, zone_methods }, sample_data: {...counts} | false }`.

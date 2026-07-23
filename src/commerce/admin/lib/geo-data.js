@@ -1,5 +1,5 @@
 /**
- * Static geographic reference data for pickers (mirror of base44/shared/data/*.ts).
+ * Static geographic reference data for pickers (mirror of base44/shared/commerce/data/*.ts).
  * Countries: ISO 3166-1 alpha-2. States included for US / CA / AU; other
  * countries accept free-text state input in AddressForm.
  */

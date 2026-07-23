@@ -40,8 +40,8 @@ function regionsSummary(locations) {
 function ZonesTab() {
   const navigate = useNavigate();
   const href = useAdminHref();
-  const zones = useAsync(() => base44.entities.ShippingZone.list("order", 200), []);
-  const methods = useAsync(() => base44.entities.ShippingZoneMethod.list(undefined, 500), []);
+  const zones = useAsync(() => base44.entities["commerce.ShippingZone"].list("order", 200), []);
+  const methods = useAsync(() => base44.entities["commerce.ShippingZoneMethod"].list(undefined, 500), []);
   const [creating, setCreating] = useState(false);
 
   const methodsByZone = useMemo(() => {
@@ -68,7 +68,7 @@ function ZonesTab() {
       const maxOrder = (zones.data || [])
         .filter((z) => (z.locations || []).length > 0)
         .reduce((m, z) => Math.max(m, z.order ?? 0), 0);
-      const zone = await base44.entities.ShippingZone.create({
+      const zone = await base44.entities["commerce.ShippingZone"].create({
         name: "New zone",
         order: maxOrder + 1,
         locations: [],
@@ -126,7 +126,7 @@ function ZonesTab() {
 }
 
 function ClassesTab() {
-  const classes = useAsync(() => base44.entities.ShippingClass.list("name", 200), []);
+  const classes = useAsync(() => base44.entities["commerce.ShippingClass"].list("name", 200), []);
   const blank = { id: null, name: "", slug: "", description: "" };
   const [form, setForm] = useState(blank);
   const [slugTouched, setSlugTouched] = useState(false);
@@ -150,8 +150,8 @@ function ClassesTab() {
     setSaving(true);
     try {
       const payload = { name: form.name, slug: form.slug || slugify(form.name), description: form.description };
-      if (form.id) await base44.entities.ShippingClass.update(form.id, payload);
-      else await base44.entities.ShippingClass.create(payload);
+      if (form.id) await base44.entities["commerce.ShippingClass"].update(form.id, payload);
+      else await base44.entities["commerce.ShippingClass"].create(payload);
       toast.success("Shipping class saved");
       reset();
       classes.refetch();
@@ -165,7 +165,7 @@ function ClassesTab() {
   const remove = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ShippingClass.delete(toDelete.id);
+      await base44.entities["commerce.ShippingClass"].delete(toDelete.id);
       toast.success("Shipping class deleted");
       if (form.id === toDelete.id) reset();
       setToDelete(null);

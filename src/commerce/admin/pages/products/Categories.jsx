@@ -27,7 +27,7 @@ const BLANK = { id: null, name: "", slug: "", parent_id: "", description: "", im
 
 export default function Categories() {
   const { data: categories, loading, refetch } = useAsync(
-    () => base44.entities.ProductCategory.list("menu_order", 1000),
+    () => base44.entities["commerce.ProductCategory"].list("menu_order", 1000),
     []
   );
   const [form, setForm] = useState({ ...BLANK });
@@ -92,8 +92,8 @@ export default function Categories() {
         description: form.description,
         image: form.image,
       };
-      if (form.id) await base44.entities.ProductCategory.update(form.id, payload);
-      else await base44.entities.ProductCategory.create(payload);
+      if (form.id) await base44.entities["commerce.ProductCategory"].update(form.id, payload);
+      else await base44.entities["commerce.ProductCategory"].create(payload);
       toast.success(form.id ? "Category updated" : "Category created");
       reset();
       refetch();
@@ -107,7 +107,7 @@ export default function Categories() {
   const doDelete = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ProductCategory.delete(confirmDelete.id);
+      await base44.entities["commerce.ProductCategory"].delete(confirmDelete.id);
       toast.success("Category deleted");
       if (form.id === confirmDelete.id) reset();
       setConfirmDelete(null);

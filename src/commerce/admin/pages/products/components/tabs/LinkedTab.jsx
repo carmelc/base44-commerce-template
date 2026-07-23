@@ -29,7 +29,7 @@ function ProductIdsPicker({ ids, onChange, placeholder }) {
     }
     Promise.all(
       missing.map((id) =>
-        base44.entities.Product.get(id)
+        base44.entities["commerce.Product"].get(id)
           .then((p) => ({ value: id, label: p?.name || "(deleted product)" }))
           .catch(() => ({ value: id, label: "(deleted product)" }))
       )

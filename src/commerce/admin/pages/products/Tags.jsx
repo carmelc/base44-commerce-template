@@ -18,7 +18,7 @@ const BLANK = { id: null, name: "", slug: "", description: "" };
 
 export default function Tags() {
   const { data: tags, loading, refetch } = useAsync(
-    () => base44.entities.ProductTag.list("name", 1000),
+    () => base44.entities["commerce.ProductTag"].list("name", 1000),
     []
   );
   const [form, setForm] = useState({ ...BLANK });
@@ -45,8 +45,8 @@ export default function Tags() {
     setSaving(true);
     try {
       const payload = { name: form.name.trim(), slug: form.slug || slugify(form.name), description: form.description };
-      if (form.id) await base44.entities.ProductTag.update(form.id, payload);
-      else await base44.entities.ProductTag.create(payload);
+      if (form.id) await base44.entities["commerce.ProductTag"].update(form.id, payload);
+      else await base44.entities["commerce.ProductTag"].create(payload);
       toast.success(form.id ? "Tag updated" : "Tag created");
       reset();
       refetch();
@@ -60,7 +60,7 @@ export default function Tags() {
   const doDelete = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ProductTag.delete(confirmDelete.id);
+      await base44.entities["commerce.ProductTag"].delete(confirmDelete.id);
       toast.success("Tag deleted");
       if (form.id === confirmDelete.id) reset();
       setConfirmDelete(null);

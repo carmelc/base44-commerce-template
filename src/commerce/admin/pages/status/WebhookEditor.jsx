@@ -54,7 +54,7 @@ export default function WebhookEditor() {
     if (isNew) return;
     let cancelled = false;
     setLoading(true);
-    base44.entities.Webhook.get(id)
+    base44.entities["commerce.Webhook"].get(id)
       .then((w) => !cancelled && w && setForm({ ...blank, ...w }))
       .catch((err) => toast.error(err.message || "Failed to load webhook"))
       .finally(() => !cancelled && setLoading(false));
@@ -84,11 +84,11 @@ export default function WebhookEditor() {
         api_version: form.api_version || "v3",
       };
       if (isNew) {
-        const created = await base44.entities.Webhook.create(payload);
+        const created = await base44.entities["commerce.Webhook"].create(payload);
         toast.success("Webhook created");
         navigate(href(`webhooks/${created.id}`));
       } else {
-        await base44.entities.Webhook.update(id, payload);
+        await base44.entities["commerce.Webhook"].update(id, payload);
         toast.success("Webhook saved");
       }
     } catch (err) {
@@ -101,7 +101,7 @@ export default function WebhookEditor() {
   const remove = async () => {
     setDeleting(true);
     try {
-      await base44.entities.Webhook.delete(id);
+      await base44.entities["commerce.Webhook"].delete(id);
       toast.success("Webhook deleted");
       navigate(href("webhooks"));
     } catch (err) {
@@ -223,7 +223,7 @@ export default function WebhookEditor() {
 
 function DeliveriesCard({ webhookId }) {
   const deliveries = useAsync(
-    () => base44.entities.WebhookDelivery.filter({ webhook_id: webhookId }, "-created_date", 20),
+    () => base44.entities["commerce.WebhookDelivery"].filter({ webhook_id: webhookId }, "-created_date", 20),
     [webhookId]
   );
   const [expanded, setExpanded] = useState(null);

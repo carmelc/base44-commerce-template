@@ -64,7 +64,7 @@ export default function OrdersList() {
         });
         return data?.rows || data || [];
       }
-      return base44.entities.Order.filter(status ? { status } : {}, sort, limit, skip);
+      return base44.entities["commerce.Order"].filter(status ? { status } : {}, sort, limit, skip);
     },
     { deps: [debouncedQuery, status, dateRange?.from, dateRange?.to] }
   );

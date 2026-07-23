@@ -59,7 +59,7 @@ export default function Dashboard() {
 
   const summary = useAsync(() => call("admin-reports", "summary", {}, { silent: true }), []);
   const stock = useAsync(() => call("admin-reports", "stock", {}, { silent: true }), []);
-  const latest = useAsync(() => base44.entities.Order.list("-created_date", 8), []);
+  const latest = useAsync(() => base44.entities["commerce.Order"].list("-created_date", 8), []);
 
   const s = summary.data || {};
   const ordersByStatus = s.orders_by_status || {};

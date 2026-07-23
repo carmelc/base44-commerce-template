@@ -166,7 +166,7 @@ function TaxOptions({ classes }) {
 
 export default function TaxSettings() {
   const { data: classes, loading, refetch } = useAsync(
-    () => base44.entities.TaxClass.list("created_date", 100),
+    () => base44.entities["commerce.TaxClass"].list("created_date", 100),
     []
   );
   const [tab, setTab] = useState("options");
@@ -182,7 +182,7 @@ export default function TaxSettings() {
     setCreating(true);
     try {
       const slug = slugify(name);
-      await base44.entities.TaxClass.create({ slug, name });
+      await base44.entities["commerce.TaxClass"].create({ slug, name });
       toast.success(`Tax class "${name}" added`);
       setAddOpen(false);
       setNewName("");
@@ -198,7 +198,7 @@ export default function TaxSettings() {
   const deleteClass = async () => {
     setDeleting(true);
     try {
-      await base44.entities.TaxClass.delete(deleteTarget.id);
+      await base44.entities["commerce.TaxClass"].delete(deleteTarget.id);
       toast.success(`Tax class "${deleteTarget.name}" removed. Its tax rates were kept.`);
       setDeleteTarget(null);
       if (tab === deleteTarget.slug) setTab("options");

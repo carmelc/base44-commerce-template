@@ -25,7 +25,7 @@ export function SettingsProvider({ children }) {
 
   const load = useCallback(async () => {
     try {
-      const records = await base44.entities.StoreSettings.list(undefined, 100);
+      const records = await base44.entities["commerce.StoreSettings"].list(undefined, 100);
       const groups = {};
       const ids = {};
       (records || []).forEach((r) => {
@@ -53,8 +53,8 @@ export function SettingsProvider({ children }) {
   const saveGroup = useCallback(
     async (group, values) => {
       const id = state.ids[group];
-      if (id) await base44.entities.StoreSettings.update(id, { values });
-      else await base44.entities.StoreSettings.create({ group_id: group, values });
+      if (id) await base44.entities["commerce.StoreSettings"].update(id, { values });
+      else await base44.entities["commerce.StoreSettings"].create({ group_id: group, values });
       await load();
     },
     [state.ids, load]
@@ -90,7 +90,7 @@ export function SettingsProvider({ children }) {
   return <SettingsCtx.Provider value={value}>{children}</SettingsCtx.Provider>;
 }
 
-/** First-run screen: initialize store defaults via the seed-store function. */
+/** First-run screen: initialize store defaults via the commerce/seed-store function. */
 function SetupScreen({ onDone }) {
   const [hasProducts, setHasProducts] = useState(null);
   const [withSample, setWithSample] = useState(false);
@@ -98,7 +98,7 @@ function SetupScreen({ onDone }) {
   const [schemaErrors, setSchemaErrors] = useState(null);
 
   useEffect(() => {
-    base44.entities.Product.list(undefined, 1)
+    base44.entities["commerce.Product"].list(undefined, 1)
       .then((rows) => setHasProducts((rows || []).length > 0))
       .catch(() => setHasProducts(true)); // on error, hide the sample-data option
   }, []);

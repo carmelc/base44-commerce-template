@@ -14,7 +14,7 @@ import { formatDate } from "../../lib/format";
 export default function Webhooks() {
   const navigate = useNavigate();
   const href = useAdminHref();
-  const hooks = useAsync(() => base44.entities.Webhook.list("-created_date", 200), []);
+  const hooks = useAsync(() => base44.entities["commerce.Webhook"].list("-created_date", 200), []);
 
   const columns = [
     { key: "name", label: "Name", render: (w) => <span className="font-medium">{w.name}</span> },

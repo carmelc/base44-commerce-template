@@ -131,7 +131,7 @@ export default function ProductsList() {
   const [deleting, setDeleting] = useState(false);
   const debouncedQ = useDebounce(q, 300);
 
-  const { data: categories } = useAsync(() => base44.entities.ProductCategory.list(undefined, 1000), []);
+  const { data: categories } = useAsync(() => base44.entities["commerce.ProductCategory"].list(undefined, 1000), []);
   const categoryName = useMemo(() => {
     const map = new Map((categories || []).map((c) => [c.id, c.name]));
     return (id) => map.get(id) || null;
@@ -156,7 +156,7 @@ export default function ProductsList() {
       const query = {};
       if (type !== ALL) query.type = type;
       if (stock !== ALL) query.stock_status = stock;
-      return base44.entities.Product.filter(query, sort, limit, skip);
+      return base44.entities["commerce.Product"].filter(query, sort, limit, skip);
     },
     [usingSearch, debouncedQ, category, type, stock]
   );

@@ -48,7 +48,7 @@ const newRow = (taxClass, order) => ({
  */
 export default function TaxRatesTable({ taxClass }) {
   const { data, loading, refetch } = useAsync(
-    () => base44.entities.TaxRate.filter({ tax_class: taxClass }, "menu_order", 500),
+    () => base44.entities["commerce.TaxRate"].filter({ tax_class: taxClass }, "menu_order", 500),
     [taxClass]
   );
 
@@ -100,9 +100,9 @@ export default function TaxRatesTable({ taxClass }) {
           tax_class: taxClass,
           menu_order: rows.indexOf(r),
         };
-        if (r._state === "new") await base44.entities.TaxRate.create(payload);
-        else if (r._state === "modified") await base44.entities.TaxRate.update(r.id, payload);
-        else if (r._state === "deleted") await base44.entities.TaxRate.delete(r.id);
+        if (r._state === "new") await base44.entities["commerce.TaxRate"].create(payload);
+        else if (r._state === "modified") await base44.entities["commerce.TaxRate"].update(r.id, payload);
+        else if (r._state === "deleted") await base44.entities["commerce.TaxRate"].delete(r.id);
       }
       toast.success("Tax rates saved");
       await refetch();

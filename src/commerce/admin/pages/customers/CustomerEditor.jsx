@@ -54,8 +54,8 @@ export default function CustomerEditor() {
     let cancelled = false;
     setLoading(true);
     Promise.all([
-      base44.entities.Customer.get(id),
-      base44.entities.Order.filter({ customer_id: id }, "-created_date", 10).catch(() => []),
+      base44.entities["commerce.Customer"].get(id),
+      base44.entities["commerce.Order"].filter({ customer_id: id }, "-created_date", 10).catch(() => []),
     ])
       .then(([c, orders]) => {
         if (cancelled) return;

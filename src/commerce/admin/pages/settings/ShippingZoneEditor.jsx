@@ -68,8 +68,8 @@ export default function ShippingZoneEditor() {
   const [savingZone, setSavingZone] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-  const methods = useAsync(() => base44.entities.ShippingZoneMethod.filter({ zone_id: zoneId }, "order", 100), [zoneId]);
-  const classes = useAsync(() => base44.entities.ShippingClass.list("name", 200), []);
+  const methods = useAsync(() => base44.entities["commerce.ShippingZoneMethod"].filter({ zone_id: zoneId }, "order", 100), [zoneId]);
+  const classes = useAsync(() => base44.entities["commerce.ShippingClass"].list("name", 200), []);
 
   const [dialog, setDialog] = useState(null); // { method, isNew }
   const [savingMethod, setSavingMethod] = useState(false);
@@ -80,7 +80,7 @@ export default function ShippingZoneEditor() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    base44.entities.ShippingZone.get(zoneId)
+    base44.entities["commerce.ShippingZone"].get(zoneId)
       .then((z) => {
         if (cancelled || !z) return;
         setName(z.name || "");
@@ -116,7 +116,7 @@ export default function ShippingZoneEditor() {
           .filter(Boolean)
           .map((code) => ({ type: "postcode", code })),
       ];
-      await base44.entities.ShippingZone.update(zoneId, { name, locations });
+      await base44.entities["commerce.ShippingZone"].update(zoneId, { name, locations });
       toast.success("Zone saved");
       setDirty(false);
     } catch (err) {
@@ -131,7 +131,7 @@ export default function ShippingZoneEditor() {
     try {
       const type = SHIPPING_METHOD_TYPES.find((t) => t.value === methodId);
       const order = (methods.data || []).reduce((m, x) => Math.max(m, x.order ?? 0), 0) + 1;
-      const created = await base44.entities.ShippingZoneMethod.create({
+      const created = await base44.entities["commerce.ShippingZoneMethod"].create({
         zone_id: zoneId,
         method_id: methodId,
         title: type?.label || methodId,
@@ -150,7 +150,7 @@ export default function ShippingZoneEditor() {
 
   const toggleMethod = async (m, enabled) => {
     try {
-      await base44.entities.ShippingZoneMethod.update(m.id, { enabled });
+      await base44.entities["commerce.ShippingZoneMethod"].update(m.id, { enabled });
       methods.refetch();
     } catch (err) {
       toast.error(err.message || "Failed to update method");
@@ -161,7 +161,7 @@ export default function ShippingZoneEditor() {
     setSavingMethod(true);
     try {
       const { method } = dialog;
-      await base44.entities.ShippingZoneMethod.update(method.id, {
+      await base44.entities["commerce.ShippingZoneMethod"].update(method.id, {
         title: method.title,
         settings: method.settings,
       });
@@ -178,7 +178,7 @@ export default function ShippingZoneEditor() {
   const removeMethod = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ShippingZoneMethod.delete(toDelete.id);
+      await base44.entities["commerce.ShippingZoneMethod"].delete(toDelete.id);
       toast.success("Method removed");
       setToDelete(null);
       methods.refetch();

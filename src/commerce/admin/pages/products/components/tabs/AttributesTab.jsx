@@ -39,7 +39,7 @@ export default function AttributesTab({ product, up, refs }) {
     let cancelled = false;
     Promise.all(
       missing.map((id) =>
-        base44.entities.ProductAttributeTerm.filter({ attribute_id: id }, "menu_order", 500)
+        base44.entities["commerce.ProductAttributeTerm"].filter({ attribute_id: id }, "menu_order", 500)
           .then((terms) => [id, terms || []])
           .catch(() => [id, []])
       )

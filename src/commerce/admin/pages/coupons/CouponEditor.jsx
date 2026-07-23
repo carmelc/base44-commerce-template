@@ -142,7 +142,7 @@ export default function CouponEditor() {
 
   // Load categories once (small list, client-filtered in the picker).
   useEffect(() => {
-    base44.entities.ProductCategory.list("name", 500)
+    base44.entities["commerce.ProductCategory"].list("name", 500)
       .then(setCategories)
       .catch(() => setCategories([]));
   }, []);
@@ -167,14 +167,14 @@ export default function CouponEditor() {
     if (isNew) return;
     let cancelled = false;
     setLoading(true);
-    base44.entities.Coupon.get(id)
+    base44.entities["commerce.Coupon"].get(id)
       .then(async (c) => {
         if (cancelled) return;
         setCoupon({ ...EMPTY, ...c });
         const resolve = (ids) =>
           Promise.all(
             (ids || []).map((pid) =>
-              base44.entities.Product.get(pid)
+              base44.entities["commerce.Product"].get(pid)
                 .then((p) => ({ value: p.id, label: p.name, meta: p.sku }))
                 .catch(() => ({ value: pid, label: pid }))
             )

@@ -62,7 +62,7 @@ export default function AddProductDialog({ open, onOpenChange, onAdd }) {
     if (opt?.product?.type === "variable") {
       setLoadingVariations(true);
       try {
-        const rows = await base44.entities.ProductVariation.filter({ product_id: opt.value }, "menu_order", 200);
+        const rows = await base44.entities["commerce.ProductVariation"].filter({ product_id: opt.value }, "menu_order", 200);
         setVariations(rows || []);
       } finally {
         setLoadingVariations(false);

@@ -22,9 +22,9 @@ export default function AttributeTerms() {
   const { id } = useParams();
   const href = useAdminHref();
 
-  const { data: attribute } = useAsync(() => base44.entities.ProductAttribute.get(id), [id]);
+  const { data: attribute } = useAsync(() => base44.entities["commerce.ProductAttribute"].get(id), [id]);
   const { data: terms, loading, refetch } = useAsync(
-    () => base44.entities.ProductAttributeTerm.filter({ attribute_id: id }, "menu_order", 1000),
+    () => base44.entities["commerce.ProductAttributeTerm"].filter({ attribute_id: id }, "menu_order", 1000),
     [id]
   );
 
@@ -69,8 +69,8 @@ export default function AttributeTerms() {
         description: form.description,
         menu_order: Number(form.menu_order) || 0,
       };
-      if (form.id) await base44.entities.ProductAttributeTerm.update(form.id, payload);
-      else await base44.entities.ProductAttributeTerm.create(payload);
+      if (form.id) await base44.entities["commerce.ProductAttributeTerm"].update(form.id, payload);
+      else await base44.entities["commerce.ProductAttributeTerm"].create(payload);
       toast.success(form.id ? "Term updated" : "Term created");
       reset();
       refetch();
@@ -84,7 +84,7 @@ export default function AttributeTerms() {
   const doDelete = async () => {
     setDeleting(true);
     try {
-      await base44.entities.ProductAttributeTerm.delete(confirmDelete.id);
+      await base44.entities["commerce.ProductAttributeTerm"].delete(confirmDelete.id);
       toast.success("Term deleted");
       if (form.id === confirmDelete.id) reset();
       setConfirmDelete(null);

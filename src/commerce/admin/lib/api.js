@@ -18,7 +18,8 @@ const base44 = base44Client.base44 ?? base44Client.default;
  * - On failure: shows an error toast (unless `opts.silent`) and rethrows an
  *   Error carrying `.code` and `.details` from the function's error body.
  *
- * @param {string} fn - function name, e.g. "admin-orders"
+ * @param {string} fn - function name without the "commerce/" prefix, e.g.
+ *   "admin-orders" (invoked as "commerce/admin-orders" — the prefix is added here)
  * @param {string|null} action - action name, e.g. "status-counts" (null = send payload as-is)
  * @param {object} payload
  * @param {{silent?: boolean}} opts
@@ -26,7 +27,7 @@ const base44 = base44Client.base44 ?? base44Client.default;
 export async function call(fn, action, payload = {}, opts = {}) {
   try {
     const body = action ? { action, ...payload } : { ...payload };
-    const res = await base44.functions.invoke(fn, body);
+    const res = await base44.functions.invoke(`commerce/${fn}`, body);
     const data = res?.data;
     if (data && typeof data === "object" && "success" in data) {
       if (data.success === false) {

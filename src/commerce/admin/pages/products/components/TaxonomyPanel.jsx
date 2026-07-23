@@ -82,7 +82,7 @@ function CategoriesCard({ categories, selected, onChange, refresh }) {
     if (!name.trim()) return;
     setSaving(true);
     try {
-      const created = await base44.entities.ProductCategory.create({
+      const created = await base44.entities["commerce.ProductCategory"].create({
         name: name.trim(),
         slug: slugify(name),
         parent_id: parent === NO_PARENT ? "" : parent,
@@ -195,7 +195,7 @@ function TagsCard({ tags, selected, onChange, refresh }) {
     }
     setSaving(true);
     try {
-      const created = await base44.entities.ProductTag.create({ name: label, slug: slugify(label) });
+      const created = await base44.entities["commerce.ProductTag"].create({ name: label, slug: slugify(label) });
       toast.success("Tag created");
       setNewTag("");
       await refresh?.();

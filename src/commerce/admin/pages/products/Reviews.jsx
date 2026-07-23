@@ -61,7 +61,7 @@ export default function Reviews() {
   const fetcher = useCallback(
     (limit, skip, sort) => {
       const query = tab === "all" ? {} : { status: tab };
-      return base44.entities.ProductReview.filter(query, sort, limit, skip);
+      return base44.entities["commerce.ProductReview"].filter(query, sort, limit, skip);
     },
     [tab]
   );
@@ -75,7 +75,7 @@ export default function Reviews() {
     let cancelled = false;
     Promise.all(
       ids.map((id) =>
-        base44.entities.Product.get(id)
+        base44.entities["commerce.Product"].get(id)
           .then((p) => [id, p?.name || "(deleted product)"])
           .catch(() => [id, "(deleted product)"])
       )

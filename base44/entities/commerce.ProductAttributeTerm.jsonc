@@ -1,0 +1,38 @@
+{
+  "name": "commerce.ProductAttributeTerm",
+  "type": "object",
+  "description": "A term (option value) of a global ProductAttribute.",
+  "properties": {
+    "attribute_id": {
+      "type": "string",
+      "description": "Parent ProductAttribute id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "description": "Unique within the attribute (enforced in admin UI / functions)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "menu_order": {
+      "type": "integer",
+      "default": 0
+    },
+    "count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Derived product count. Maintained by commerce/admin-products; repair via commerce/admin-tools recount-terms."
+    }
+  },
+  "required": ["attribute_id", "name"],
+  "rls": {
+    "read": true,
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

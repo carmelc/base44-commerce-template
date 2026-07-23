@@ -7,8 +7,8 @@ It reproduces WooCommerce's **data model and behavior** (product types, order li
 ## What's included
 
 - **24 entities** — Products (simple/grouped/external/variable), variations, categories, tags, attributes + terms, reviews, orders (embedded line/shipping/tax/fee/coupon lines), order notes, refunds, coupons, customers, tax classes/rates, shipping zones/methods, payment gateways, store settings, webhooks + deliveries, carts, download permissions, email log.
-- **14 backend functions** — 9 admin (`admin-products`, `admin-orders`, `admin-refunds`, `admin-coupons`, `admin-customers`, `admin-reviews`, `admin-webhooks`, `admin-reports`, `admin-tools`), 4 storefront (`storefront-catalog`, `storefront-cart`, `storefront-checkout`, `storefront-account`), and an idempotent `seed-store`.
-- **Shared commerce engine** (`base44/shared/`) — totals, tax, shipping, coupons, stock, order lifecycle, webhook dispatch (HMAC-signed), emails, plus static country/currency/continent data.
+- **14 backend functions** — 9 admin (`commerce/admin-products`, `commerce/admin-orders`, `commerce/admin-refunds`, `commerce/admin-coupons`, `commerce/admin-customers`, `commerce/admin-reviews`, `commerce/admin-webhooks`, `commerce/admin-reports`, `commerce/admin-tools`), 4 storefront (`commerce/storefront-catalog`, `commerce/storefront-cart`, `commerce/storefront-checkout`, `commerce/storefront-account`), and an idempotent `commerce/seed-store`.
+- **Shared commerce engine** (`base44/shared/commerce/`) — totals, tax, shipping, coupons, stock, order lifecycle, webhook dispatch (HMAC-signed), emails, plus static country/currency/continent data.
 - **Admin UI** (`src/commerce/admin/`) — a React/Tailwind/shadcn admin mirroring WooCommerce's information architecture: dashboard, orders, products, coupons, customers, reports, full settings, webhooks. Admin-role gated.
 - **Docs** — this README, [`implementation-guidelines.md`](./implementation-guidelines.md), and the API references in [`docs/`](./docs/).
 
@@ -17,9 +17,11 @@ It reproduces WooCommerce's **data model and behavior** (product types, order li
 ```
 base44-commerce-template/
 ├── base44/
-│   ├── entities/     24 .jsonc entity schemas
-│   ├── functions/    14 Deno functions (entry.ts each)
-│   └── shared/       commerce engine + static data (bundled into every function)
+│   ├── entities/     24 .jsonc entity schemas (commerce.*.jsonc)
+│   ├── functions/
+│   │   └── commerce/ 14 Deno functions (entry.ts each), invoked as "commerce/<name>"
+│   └── shared/
+│       └── commerce/ commerce engine + static data (bundled into every function)
 ├── src/
 │   └── commerce/
 │       └── admin/    React admin UI (copy into your app's src/commerce/)
@@ -53,7 +55,7 @@ From your existing Base44 app:
    <Route path="/admin/*" element={<AdminApp />} />
    ```
 6. **Grant yourself the `admin` role** (Base44 dashboard → users, or `users.inviteUser(email, "admin")`). The admin UI refuses non-admins.
-7. **Open `/admin`** → click **Initialize store defaults** on the first-run setup screen. This runs `seed-store` (settings, gateways, tax classes, fallback shipping zone; optional sample catalog if the store is empty).
+7. **Open `/admin`** → click **Initialize store defaults** on the first-run setup screen. This runs `commerce/seed-store` (settings, gateways, tax classes, fallback shipping zone; optional sample catalog if the store is empty).
 
 ## Quick start (Base44 MCP / hosted apps)
 
@@ -65,9 +67,9 @@ If you build on Base44's hosted platform, use the Base44 agent/MCP to write the 
 
 ## What's NOT included
 
-- **No visitor/storefront UI.** The storefront **API** is complete (`storefront-*` functions); building the shopfront is up to you — see [`docs/api-storefront.md`](./docs/api-storefront.md).
+- **No visitor/storefront UI.** The storefront **API** is complete (`commerce/storefront-*` functions); building the shopfront is up to you — see [`docs/api-storefront.md`](./docs/api-storefront.md).
 - **No live payment processing.** Payment gateways are modeled as data (bank transfer / cheque / COD work as manual flows). A **Stripe** gateway placeholder is included; wire it via the Base44 Stripe connector — see [`implementation-guidelines.md`](./implementation-guidelines.md) §Stripe wiring.
-- **No scheduled workflows shipped.** Base44 *does* have a scheduler, but this template ships no workflow files — time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** where possible, and for the rest you (or the Base44 agent) create scheduled workflows that call `admin-tools`/`admin-orders` actions — see *Scheduled work* in [`implementation-guidelines.md`](./implementation-guidelines.md).
+- **No scheduled workflows shipped.** Base44 *does* have a scheduler, but this template ships no workflow files — time-based jobs (stock-hold release, cart expiry, webhook-log pruning) run **opportunistically** where possible, and for the rest you (or the Base44 agent) create scheduled workflows that call `commerce/admin-tools`/`commerce/admin-orders` actions — see *Scheduled work* in [`implementation-guidelines.md`](./implementation-guidelines.md).
 
 ## Next steps
 

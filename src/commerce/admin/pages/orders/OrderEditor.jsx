@@ -74,17 +74,17 @@ export default function OrderEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const order = useAsync(() => (id ? base44.entities.Order.get(id) : Promise.resolve(null)), [id]);
+  const order = useAsync(() => (id ? base44.entities["commerce.Order"].get(id) : Promise.resolve(null)), [id]);
   const notes = useAsync(
-    () => (id ? base44.entities.OrderNote.filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
+    () => (id ? base44.entities["commerce.OrderNote"].filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
     [id]
   );
   const refunds = useAsync(
-    () => (id ? base44.entities.OrderRefund.filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
+    () => (id ? base44.entities["commerce.OrderRefund"].filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
     [id]
   );
   const permissions = useAsync(
-    () => (id ? base44.entities.DownloadPermission.filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
+    () => (id ? base44.entities["commerce.DownloadPermission"].filter({ order_id: id }, "-created_date", 100) : Promise.resolve([])),
     [id]
   );
 

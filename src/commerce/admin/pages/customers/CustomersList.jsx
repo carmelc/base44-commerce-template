@@ -34,7 +34,7 @@ export default function CustomersList() {
         });
         return data?.rows || [];
       }
-      return base44.entities.Customer.list(sort, limit, skip);
+      return base44.entities["commerce.Customer"].list(sort, limit, skip);
     },
     { deps: [debouncedQuery] }
   );

@@ -21,7 +21,7 @@ import useAsync from "../../hooks/useAsync";
 const emptyBank = () => ({ account_name: "", account_number: "", bank_name: "", sort_code: "", iban: "", bic: "" });
 
 export default function PaymentsSettings() {
-  const gateways = useAsync(() => base44.entities.PaymentGateway.list("order", 100), []);
+  const gateways = useAsync(() => base44.entities["commerce.PaymentGateway"].list("order", 100), []);
   const [dialog, setDialog] = useState(null); // { gateway (local copy) }
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -30,7 +30,7 @@ export default function PaymentsSettings() {
 
   const toggle = async (g, enabled) => {
     try {
-      await base44.entities.PaymentGateway.update(g.id, { enabled });
+      await base44.entities["commerce.PaymentGateway"].update(g.id, { enabled });
       gateways.refetch();
     } catch (err) {
       toast.error(err.message || "Failed to update gateway");
@@ -45,8 +45,8 @@ export default function PaymentsSettings() {
     setBusy(true);
     try {
       await Promise.all([
-        base44.entities.PaymentGateway.update(a.id, { order: b.order ?? target }),
-        base44.entities.PaymentGateway.update(b.id, { order: a.order ?? index }),
+        base44.entities["commerce.PaymentGateway"].update(a.id, { order: b.order ?? target }),
+        base44.entities["commerce.PaymentGateway"].update(b.id, { order: a.order ?? index }),
       ]);
       gateways.refetch();
     } catch (err) {
@@ -60,7 +60,7 @@ export default function PaymentsSettings() {
     setSaving(true);
     try {
       const g = dialog.gateway;
-      await base44.entities.PaymentGateway.update(g.id, {
+      await base44.entities["commerce.PaymentGateway"].update(g.id, {
         title: g.title,
         description: g.description,
         settings: g.settings || {},

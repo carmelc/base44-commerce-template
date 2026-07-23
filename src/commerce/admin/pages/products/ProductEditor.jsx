@@ -76,16 +76,16 @@ export default function ProductEditor() {
 
   // Reference data, loaded once.
   const { data: categories, refetch: refreshCategories } = useAsync(
-    () => base44.entities.ProductCategory.list(undefined, 1000),
+    () => base44.entities["commerce.ProductCategory"].list(undefined, 1000),
     []
   );
   const { data: tags, refetch: refreshTags } = useAsync(
-    () => base44.entities.ProductTag.list(undefined, 1000),
+    () => base44.entities["commerce.ProductTag"].list(undefined, 1000),
     []
   );
-  const { data: attributes } = useAsync(() => base44.entities.ProductAttribute.list(undefined, 500), []);
-  const { data: shippingClasses } = useAsync(() => base44.entities.ShippingClass.list(undefined, 500), []);
-  const { data: taxClasses } = useAsync(() => base44.entities.TaxClass.list(undefined, 100), []);
+  const { data: attributes } = useAsync(() => base44.entities["commerce.ProductAttribute"].list(undefined, 500), []);
+  const { data: shippingClasses } = useAsync(() => base44.entities["commerce.ShippingClass"].list(undefined, 500), []);
+  const { data: taxClasses } = useAsync(() => base44.entities["commerce.TaxClass"].list(undefined, 100), []);
 
   const load = useCallback(async () => {
     if (isNew) {
@@ -95,8 +95,8 @@ export default function ProductEditor() {
       return;
     }
     const [p, vars] = await Promise.all([
-      base44.entities.Product.get(id),
-      base44.entities.ProductVariation.filter({ product_id: id }, "menu_order", 1000),
+      base44.entities["commerce.Product"].get(id),
+      base44.entities["commerce.ProductVariation"].filter({ product_id: id }, "menu_order", 1000),
     ]);
     const merged = { ...NEW_PRODUCT, ...p };
     setProduct(merged);

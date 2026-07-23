@@ -36,7 +36,7 @@ export default function CouponsList() {
         });
         return data?.rows || [];
       }
-      return base44.entities.Coupon.list(sort, limit, skip);
+      return base44.entities["commerce.Coupon"].list(sort, limit, skip);
     },
     { deps: [debouncedQuery] }
   );

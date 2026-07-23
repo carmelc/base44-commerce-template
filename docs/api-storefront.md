@@ -2,13 +2,13 @@
 
 Everything needed to build a customer-facing shopfront (or headless client) against the Base44 Commerce Template. No visitor UI ships with the template — this is your integration surface.
 
-Four public functions: **`storefront-catalog`**, **`storefront-cart`**, **`storefront-checkout`**, **`storefront-account`**. All are invoked the same way and return the same envelope.
+Four public functions: **`commerce/storefront-catalog`**, **`commerce/storefront-cart`**, **`commerce/storefront-checkout`**, **`commerce/storefront-account`**. All are invoked the same way and return the same envelope.
 
 ## Conventions
 
-- **Invoke:** `base44.functions.invoke("<function>", { action, ...payload })`. Response body is on `res.data`; the envelope is `{ success, data }` on success or `{ success, error, code }` on failure (HTTP status set accordingly).
+- **Invoke:** `base44.functions.invoke("commerce/<function>", { action, ...payload })`. Response body is on `res.data`; the envelope is `{ success, data }` on success or `{ success, error, code }` on failure (HTTP status set accordingly).
   ```js
-  const res = await base44.functions.invoke("storefront-catalog", { action: "get-store-info" });
+  const res = await base44.functions.invoke("commerce/storefront-catalog", { action: "get-store-info" });
   const info = res.data.data;              // envelope → payload
   ```
 - **Auth modes:** most actions are anonymous. Some require an authenticated Base44 session (marked **auth**). Guest order access uses `order_key`; cart access uses `cart_token` — both are bearer credentials (HTTPS only).
@@ -17,7 +17,7 @@ Four public functions: **`storefront-catalog`**, **`storefront-cart`**, **`store
 
 ---
 
-## storefront-catalog
+## commerce/storefront-catalog
 
 Public catalog browsing. No auth.
 
@@ -80,7 +80,7 @@ Requires `products.enable_reviews` and the product's `reviews_allowed`. Rating r
 
 ---
 
-## storefront-cart
+## commerce/storefront-cart
 
 Token-scoped cart (guest + member). Every action **except `create`** takes `cart_token`. **Every mutating action returns the full priced cart view.** Carts have a rolling 48h TTL (refreshed on each touch). An authenticated caller's other active carts are merged in (quantities summed, `sold_individually` capped, coupon codes unioned; source carts marked abandoned).
 
@@ -123,13 +123,13 @@ Stored coupons that stop validating are **auto-removed** and reported in `coupon
 | `apply-coupon` | `{ cart_token, code }` | Full validation. `400 coupons_disabled|code_required|already_applied|<coupon code>`. |
 | `remove-coupon` | `{ cart_token, code }` | |
 | `set-shipping-address` | `{ cart_token, address: {country, state?, postcode?, city?} }` | `400 country_required`. Returns matched zone's `available_shipping_methods`. |
-| `choose-shipping-method` | `{ cart_token, method_id }` | `method_id` = a `ShippingZoneMethod` id from `available_shipping_methods`. `400 invalid_shipping_method`. |
+| `choose-shipping-method` | `{ cart_token, method_id }` | `method_id` = a `commerce.ShippingZoneMethod` id from `available_shipping_methods`. `400 invalid_shipping_method`. |
 
 Common: `400 cart_token_required`, `404 cart_not_found`, `404 cart_expired`.
 
 ---
 
-## storefront-checkout
+## commerce/storefront-checkout
 
 ### `place-order`
 Converts a cart into an order. **Payload:**
@@ -167,7 +167,7 @@ Customer-initiated cancel. **Payload:** `{ order_id, order_key }`. Only `pending
 
 ---
 
-## storefront-account
+## commerce/storefront-account
 
 Two access modes: **auth** (Base44 session) or **`order_key` bearer** (guest tracking).
 
@@ -191,37 +191,37 @@ Two access modes: **auth** (Base44 session) or **`order_key` bearer** (guest tra
 const inv = (fn, payload) => base44.functions.invoke(fn, payload).then(r => r.data.data);
 
 // 1. Browse
-const { products } = await inv("storefront-catalog", { action: "list-products", per_page: 12 });
+const { products } = await inv("commerce/storefront-catalog", { action: "list-products", per_page: 12 });
 
 // 2. New cart with one item
-let cart = await inv("storefront-cart", { action: "create",
+let cart = await inv("commerce/storefront-cart", { action: "create",
   items: [{ product_id: products[0].id, quantity: 1 }] });
 const token = cart.cart_token;
 
 // 3. (variable product) fetch options, then add the chosen variation
-const detail = await inv("storefront-catalog", { action: "get-product", id: products[0].id });
+const detail = await inv("commerce/storefront-catalog", { action: "get-product", id: products[0].id });
 if (detail.product.type === "variable") {
-  cart = await inv("storefront-cart", { action: "add-item",
+  cart = await inv("commerce/storefront-cart", { action: "add-item",
     cart_token: token, product_id: detail.product.id, variation_id: detail.variations[0].id });
 }
 
 // 4. Coupon (optional)
-cart = await inv("storefront-cart", { action: "apply-coupon", cart_token: token, code: "welcome10" });
+cart = await inv("commerce/storefront-cart", { action: "apply-coupon", cart_token: token, code: "welcome10" });
 
 // 5. Shipping address → pick a method
-cart = await inv("storefront-cart", { action: "set-shipping-address",
+cart = await inv("commerce/storefront-cart", { action: "set-shipping-address",
   cart_token: token, address: { country: "US", state: "CA", postcode: "90210", city: "Los Angeles" } });
-cart = await inv("storefront-cart", { action: "choose-shipping-method",
+cart = await inv("commerce/storefront-cart", { action: "choose-shipping-method",
   cart_token: token, method_id: cart.available_shipping_methods[0].id });
 
 // 6. Place the order (COD → processing immediately)
-const order = await inv("storefront-checkout", { action: "place-order",
+const order = await inv("commerce/storefront-checkout", { action: "place-order",
   cart_token: token, payment_method: "cod",
   billing: { first_name: "Ada", last_name: "Lovelace", address_1: "1 St",
              city: "Los Angeles", state: "CA", postcode: "90210", country: "US", email: "ada@example.com" } });
 
 // 7. Track it later without an account (order_key from step 6)
-const tracked = await inv("storefront-account", { action: "get-order",
+const tracked = await inv("commerce/storefront-account", { action: "get-order",
   order_id: order.order_id, order_key: order.order_key });
 ```
 
@@ -232,19 +232,19 @@ const inv = (fn, payload) => base44.functions.invoke(fn, payload).then(r => r.da
 // (caller is authenticated via base44 auth — the SDK sends the session automatically)
 
 // Browsing carts made while logged out merge into this one automatically on `get`/`create`.
-let cart = await inv("storefront-cart", { action: "create", items: [{ product_id, quantity: 2 }] });
+let cart = await inv("commerce/storefront-cart", { action: "create", items: [{ product_id, quantity: 2 }] });
 
 // Saved addresses speed up checkout
-await inv("storefront-account", { action: "update-my-addresses",
+await inv("commerce/storefront-account", { action: "update-my-addresses",
   billing: { first_name: "Ada", last_name: "Lovelace", address_1: "1 St", city: "LA",
              state: "CA", postcode: "90210", country: "US", email: "ada@example.com" } });
 
-const order = await inv("storefront-checkout", { action: "place-order",
+const order = await inv("commerce/storefront-checkout", { action: "place-order",
   cart_token: cart.cart_token, payment_method: "bacs", billing: { /* ... */ } });
 // bacs → on-hold; show order.payment_instructions.account_details
 
 // Order history, downloads, reviews (all auth, no order_key needed)
-const { orders } = await inv("storefront-account", { action: "my-orders", per_page: 10 });
-const { downloads } = await inv("storefront-account", { action: "my-downloads" });
-const file = await inv("storefront-account", { action: "get-download", permission_id: downloads[0]?.permission_id });
+const { orders } = await inv("commerce/storefront-account", { action: "my-orders", per_page: 10 });
+const { downloads } = await inv("commerce/storefront-account", { action: "my-downloads" });
+const file = await inv("commerce/storefront-account", { action: "get-download", permission_id: downloads[0]?.permission_id });
 ```
