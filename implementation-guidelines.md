@@ -14,7 +14,7 @@ Operational guidance for installing, embedding, extending and running the Base44
 
 **CLI path (self-hosted repo):**
 
-1. Copy `base44/entities/*`, `base44/functions/commerce/*`, `base44/shared/commerce/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
+1. Copy `base44/entities/commerce.*`, `base44/functions/commerce/*`, `base44/shared/commerce/*` into your app's `base44/` dir (merge, don't overwrite unrelated files). `shared/` is bundled into every function at deploy time.
 2. `npx base44 entities push` — creates/updates the 24 entity schemas.
 3. `npx base44 functions deploy` — deploys the 14 functions.
 4. Copy `src/commerce/admin/` → `src/commerce/admin/`, `npm i sonner recharts`, mount `<Route path="/admin/*" element={<AdminApp/>}/>`.

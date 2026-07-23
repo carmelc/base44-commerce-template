@@ -36,8 +36,9 @@ Tailwind + shadcn/ui + React Router) to get a full store back office.
 
 The folder is self-contained; it only imports from:
 
-- `@/api/base44Client` — the app's SDK client (**default export**; if your app
-  uses a named export, adjust the single import in `lib/api.js`)
+- `@/api/base44Client` — the app's SDK client (**named `base44` export**, as in
+  Base44's default app template; if your app uses a default export instead,
+  adjust the single import in `lib/api.js`)
 - `@/components/ui/*` — the host app's shadcn/ui kit
 - `react-router-dom`, `lucide-react`, `sonner`, `recharts`
 
