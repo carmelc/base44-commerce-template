@@ -189,7 +189,7 @@ export default function RefundPanel({ order, refunds, onDone }) {
           <AlertTitle>Gateway refund not wired</AlertTitle>
           <AlertDescription>
             The refund was recorded, but no money was moved: gateway refunds are a placeholder in this
-            template. See <code>skills/commerce/SKILL.md</code> §Stripe to wire the Base44 Stripe
+            template. See <code>skills/commerce/references/stripe-payments.md</code> to wire the Base44 Stripe
             connector.
           </AlertDescription>
         </Alert>

@@ -4,7 +4,7 @@
  * NOTE ON CONCURRENCY: Base44 has no transactions, so nextOrderNumber() is a
  * read-max-then-increment and two simultaneous checkouts could race. The window
  * is tiny and order ids (not numbers) are the primary key; see
- * skills/commerce/SKILL.md "Limits & concurrency" for mitigations.
+ * skills/commerce/references/limits-and-performance.md for mitigations.
  */
 
 const ORDER_NUMBER_START = 1001;

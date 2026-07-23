@@ -21,7 +21,7 @@
     "refunded_payment": {
       "type": "boolean",
       "default": false,
-      "description": "True when a real gateway refund was made (Stripe wiring placeholder — see skills/commerce/SKILL.md)"
+      "description": "True when a real gateway refund was made (Stripe wiring placeholder — see skills/commerce/references/stripe-payments.md)"
     },
     "restock_items": {
       "type": "boolean",

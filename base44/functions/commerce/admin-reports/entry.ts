@@ -1,7 +1,7 @@
 /**
  * commerce/admin-reports — on-demand report aggregation over orders.
  * Fine to ~10k orders; larger stores should materialize stats
- * (see skills/commerce/SKILL.md §Reports performance).
+ * (see skills/commerce/references/limits-and-performance.md).
  *
  * Actions: summary | sales | top-sellers | stock |
  * orders-totals | products-totals | customers-totals | coupons-totals |

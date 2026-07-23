@@ -23,10 +23,12 @@
  * overwritten (so re-running after a template update is safe), everything
  * else in the app is left untouched.
  *
- * This is only the static part of the install. The remaining steps (deps,
- * mounting the /admin route, admin role, seeding, AGENTS.md registration)
- * are described in ../installation-guidelines.md; post-install guidance
- * lives in the commerce skill (../skills/commerce/SKILL.md).
+ * This is only the static part of the install. The remaining steps live in
+ * ../skills/commerce/installation-guidelines.md (deps, deploy, seeding) and
+ * ../skills/commerce/post-installation.md (mounting the /admin route, admin
+ * role, AGENTS.md registration); day-2 guidance starts at
+ * ../skills/commerce/SKILL.md. The skill folder carries all of this
+ * documentation into the app.
  *
  * Written with dynamic import() and process.argv[1] (instead of require/
  * __dirname) so it runs unchanged whether the host app's package.json is
@@ -99,7 +101,8 @@
     // StoreAdmin agent — registered as "commerce/StoreAdmin" (folder = namespace).
     { label: "agents", from: ["base44", "agents", "commerce"], to: ["base44", "agents", "commerce"] },
     { label: "admin UI", from: ["src", "commerce", "admin"], to: ["src", "commerce", "admin"] },
-    // Commerce skill — day-2 guidance agents read before working on the store.
+    // Commerce skill — SKILL.md, install/post-install guides, references/
+    // and docs/, the guidance agents read before working on the store.
     { label: "skills", from: ["skills", "commerce"], to: ["skills", "commerce"] },
   ];
   for (const job of dirJobs) {
@@ -112,11 +115,11 @@
 
   console.log(`\nDone — ${filesCopied} files installed into ${appRoot}`);
   console.log(
-    "\nNext steps (see examples/commerce/installation-guidelines.md):\n" +
+    "\nNext steps (see skills/commerce/installation-guidelines.md + post-installation.md):\n" +
     "  1. npm i sonner recharts remark-gfm (if not already present)\n" +
     '  2. Mount the admin router: <Route path="/admin/*" element={<AdminApp />} />\n' +
     "  3. Grant your user the admin role, open /admin and initialize store defaults\n" +
-    "  4. Register the template + skill in AGENTS.md (see installation-guidelines.md §5)\n" +
+    "  4. Register the template + skill in AGENTS.md (see skills/commerce/post-installation.md)\n" +
     "  5. CLI installs only: npx base44 agents push (the hosted runtime syncs agents on write)"
   );
 })();

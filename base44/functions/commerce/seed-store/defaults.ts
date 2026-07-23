@@ -154,7 +154,7 @@ export const GATEWAY_DEFAULTS = [
     order: 3,
     method_title: "Stripe",
     method_description:
-      "Placeholder — payment processing is not wired in this template. Connect the Base44 Stripe connector and implement the checkout charge flow. See skills/commerce/SKILL.md §Stripe wiring.",
+      "Placeholder — payment processing is not wired in this template. Connect the Base44 Stripe connector and implement the checkout charge flow. See skills/commerce/references/stripe-payments.md.",
     settings: { connector: "stripe" },
   },
 ];

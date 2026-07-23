@@ -108,7 +108,7 @@ export default function PaymentsSettings() {
                     <AlertDescription>
                       This template models Stripe as data only. Connect the Base44 Stripe
                       connector and implement the checkout wiring — see{" "}
-                      <code className="text-xs">skills/commerce/SKILL.md §Stripe</code>.
+                      <code className="text-xs">skills/commerce/references/stripe-payments.md</code>.
                     </AlertDescription>
                   </Alert>
                 )}

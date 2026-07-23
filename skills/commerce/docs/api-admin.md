@@ -124,7 +124,7 @@ Actions: `test` · `redeliver` (webhook definitions themselves are direct `comme
 
 ## commerce/admin-reports
 
-All actions scan orders on demand (counted = `date_paid` set, or status `processing`/`completed`). See the commerce skill (`skills/commerce/SKILL.md`) §Reports for scaling.
+All actions scan orders on demand (counted = `date_paid` set, or status `processing`/`completed`). See the commerce skill reference `skills/commerce/references/limits-and-performance.md` for scaling.
 
 | Action | Payload | Returns |
 |---|---|---|

@@ -3,7 +3,7 @@
  * (derived pricing, stock status, taxonomy counts, webhooks).
  *
  * Actions: save | delete | batch | duplicate | set-stock | search
- * Body: { action, ...payload } — see docs/api-admin.md.
+ * Body: { action, ...payload } — see skills/commerce/docs/api-admin.md.
  */
 import { createClientFromRequest } from "npm:@base44/sdk";
 import { HttpError, requireAdmin } from "../../../shared/commerce/auth.ts";

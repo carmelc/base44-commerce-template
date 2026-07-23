@@ -4,8 +4,8 @@ React admin UI for the Base44 commerce template. Copy this
 folder into a Base44 app built on the default template (Vite + React +
 Tailwind + shadcn/ui + React Router) to get a full store back office.
 
-> Install docs: [`installation-guidelines.md`](../../../installation-guidelines.md) · architecture & operations: the commerce skill, [`skills/commerce/SKILL.md`](../../../skills/commerce/SKILL.md)
-> API references: [`docs/api-admin.md`](../../../docs/api-admin.md), [`docs/api-storefront.md`](../../../docs/api-storefront.md)
+> Install docs: [`skills/commerce/installation-guidelines.md`](../../../skills/commerce/installation-guidelines.md) · mounting & role setup: [`skills/commerce/post-installation.md`](../../../skills/commerce/post-installation.md) · architecture & operations: the commerce skill, [`skills/commerce/SKILL.md`](../../../skills/commerce/SKILL.md)
+> API references: [`skills/commerce/docs/api-admin.md`](../../../skills/commerce/docs/api-admin.md), [`skills/commerce/docs/api-storefront.md`](../../../skills/commerce/docs/api-storefront.md)
 
 ## Mounting
 
