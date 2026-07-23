@@ -4,7 +4,7 @@ React admin UI for the WooCommerce-on-Base44 commerce template. Copy this
 folder into a Base44 app built on the default template (Vite + React +
 Tailwind + shadcn/ui + React Router) to get a full store back office.
 
-> Full install & architecture docs: [`implementation-guidelines.md`](../../../implementation-guidelines.md)
+> Install docs: [`installation-guidelines.md`](../../../installation-guidelines.md) · architecture & operations: [`implementation-guidelines.md`](../../../implementation-guidelines.md)
 > API references: [`docs/api-admin.md`](../../../docs/api-admin.md), [`docs/api-storefront.md`](../../../docs/api-storefront.md)
 
 ## Mounting

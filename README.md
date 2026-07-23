@@ -10,7 +10,7 @@ It reproduces WooCommerce's **data model and behavior** (product types, order li
 - **14 backend functions** — 9 admin (`commerce/admin-products`, `commerce/admin-orders`, `commerce/admin-refunds`, `commerce/admin-coupons`, `commerce/admin-customers`, `commerce/admin-reviews`, `commerce/admin-webhooks`, `commerce/admin-reports`, `commerce/admin-tools`), 4 storefront (`commerce/storefront-catalog`, `commerce/storefront-cart`, `commerce/storefront-checkout`, `commerce/storefront-account`), and an idempotent `commerce/seed-store`.
 - **Shared commerce engine** (`base44/shared/commerce/`) — totals, tax, shipping, coupons, stock, order lifecycle, webhook dispatch (HMAC-signed), emails, plus static country/currency/continent data.
 - **Admin UI** (`src/commerce/admin/`) — a React/Tailwind/shadcn admin mirroring WooCommerce's information architecture: dashboard, orders, products, coupons, customers, reports, full settings, webhooks. Admin-role gated.
-- **Docs** — this README, [`implementation-guidelines.md`](./implementation-guidelines.md), and the API references in [`docs/`](./docs/).
+- **Docs** — this README, [`installation-guidelines.md`](./installation-guidelines.md), [`implementation-guidelines.md`](./implementation-guidelines.md), and the API references in [`docs/`](./docs/).
 
 ## Repo map
 
@@ -28,7 +28,10 @@ base44-commerce-template/
 ├── docs/
 │   ├── api-admin.md       admin function/entity reference
 │   └── api-storefront.md  storefront function reference (build your own shopfront)
-├── implementation-guidelines.md
+├── scripts/
+│   └── install.js         static installer (run from <app>/examples/commerce/scripts/)
+├── installation-guidelines.md   installing into an app (scripted or manual)
+├── implementation-guidelines.md operating & extending after installation
 └── README.md
 ```
 
@@ -36,7 +39,7 @@ base44-commerce-template/
 
 From your existing Base44 app:
 
-1. **Copy backend assets** into your app's `base44/` directory (merge `entities/`, `functions/`, `shared/`). Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these folders.
+1. **Copy the files** — either copy this whole repo into your app at `examples/commerce/` and run `node examples/commerce/scripts/install.js`, or merge `entities/`, `functions/`, `shared/` into your app's `base44/` directory by hand (see [`installation-guidelines.md`](./installation-guidelines.md)). Confirm your `base44/config.jsonc` `entitiesDir`/`functionsDir` point at these folders.
 2. **Push the schema and functions:**
    ```bash
    npx base44 entities push
@@ -61,7 +64,7 @@ From your existing Base44 app:
 
 If you build on Base44's hosted platform, use the Base44 agent/MCP to write the files instead of the CLI:
 
-1. Use `write_file` to copy every file under `base44/` and `src/commerce/admin/` into the target app (use `list_directory`/`read_file` to adapt to the app's actual layout — e.g. the `@/api/base44Client` path and your router file).
+1. Copy this whole repo into the target app at `examples/commerce/` (e.g. download + extract a tarball with `run_command`), then run `node examples/commerce/scripts/install.js` via `run_command` — or use `write_file` to copy every file under `base44/` and `src/commerce/admin/` individually (use `list_directory`/`read_file` to adapt to the app's actual layout — e.g. the `@/api/base44Client` path and your router file).
 2. Wait for the app to build (`get_app_status`), then confirm entities exist (`list_entity_schemas`).
 3. Grant your user the `admin` role, open the app, and run **Initialize store defaults**.
 
@@ -73,6 +76,7 @@ If you build on Base44's hosted platform, use the Base44 agent/MCP to write the 
 
 ## Next steps
 
-- **Embedding & operations:** [`implementation-guidelines.md`](./implementation-guidelines.md)
+- **Install into your app:** [`installation-guidelines.md`](./installation-guidelines.md)
+- **Operate & extend:** [`implementation-guidelines.md`](./implementation-guidelines.md)
 - **Build a storefront:** [`docs/api-storefront.md`](./docs/api-storefront.md)
 - **Admin automation / alternative admin:** [`docs/api-admin.md`](./docs/api-admin.md)
