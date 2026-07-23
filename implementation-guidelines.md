@@ -16,7 +16,7 @@ So that future agent sessions working on the app know the store exists and where
 ```md
 ## Installed templates
 
-- commerce - `examples/commerce/implementation-guidelines.md` — Base44 Commerce template: 24 `commerce.*` entities, 14 `commerce/*` backend functions (storefront + admin APIs), the shared commerce engine under `base44/shared/commerce/`, and the store admin UI mounted at `/admin`. Read that file before working on store features.
+- commerce - `examples/commerce/implementation-guidelines.md` — Base44 Commerce template: 24 `commerce.*` entities, 14 `commerce/*` backend functions (storefront + admin APIs), the shared commerce engine under `base44/shared/commerce/`, the store admin UI mounted at `/admin`, and the `commerce/StoreAdmin` agent (admin copilot bot in the admin sidebar). Read that file before working on store features.
 ```
 
 ---

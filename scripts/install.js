@@ -15,6 +15,7 @@
  *   ../base44/entities/commerce.*.jsonc  →  ../../../base44/entities/
  *   ../base44/functions/commerce/        →  ../../../base44/functions/commerce/
  *   ../base44/shared/commerce/           →  ../../../base44/shared/commerce/
+ *   ../base44/agents/commerce/           →  ../../../base44/agents/commerce/
  *   ../src/commerce/admin/               →  ../../../src/commerce/admin/
  *
  * Merge semantics: directories are merged — files owned by the template are
@@ -94,6 +95,8 @@
   const dirJobs = [
     { label: "functions", from: ["base44", "functions", "commerce"], to: ["base44", "functions", "commerce"] },
     { label: "shared", from: ["base44", "shared", "commerce"], to: ["base44", "shared", "commerce"] },
+    // StoreAdmin agent — registered as "commerce/StoreAdmin" (folder = namespace).
+    { label: "agents", from: ["base44", "agents", "commerce"], to: ["base44", "agents", "commerce"] },
     { label: "admin UI", from: ["src", "commerce", "admin"], to: ["src", "commerce", "admin"] },
   ];
   for (const job of dirJobs) {
@@ -107,9 +110,10 @@
   console.log(`\nDone — ${filesCopied} files installed into ${appRoot}`);
   console.log(
     "\nNext steps (see examples/commerce/installation-guidelines.md):\n" +
-    "  1. npm i sonner recharts (if not already present)\n" +
+    "  1. npm i sonner recharts remark-gfm (if not already present)\n" +
     '  2. Mount the admin router: <Route path="/admin/*" element={<AdminApp />} />\n' +
     "  3. Grant your user the admin role, open /admin and initialize store defaults\n" +
-    "  4. Register the template in AGENTS.md (see implementation-guidelines.md §1)"
+    "  4. Register the template in AGENTS.md (see implementation-guidelines.md §1)\n" +
+    "  5. CLI installs only: npx base44 agents push (the hosted runtime syncs agents on write)"
   );
 })();
